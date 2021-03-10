@@ -12,15 +12,15 @@ class User(models.Model):
 class Movie(models.Model):
     MovieId = models.AutoField(primary_key=True)
     MovieName = models.CharField(max_length=100)
-    MovieDuration = models.PositiveIntegerField()
+    MovieDuration = models.IntegerField()
 
 
 class Event(models.Model):
     EventId = models.AutoField(primary_key=True)
     Owner = models.ForeignKey(User, on_delete=models.CASCADE)
     EventAddress = models.CharField(max_length=100)
-    AvailableTickets = models.PositiveIntegerField()
-    TotalTickets = models.PositiveIntegerField()
+    AvailableTickets = models.IntegerField()
+    TotalTickets = models.IntegerField()
     EventDate = models.DateTimeField()
     MovieId = models.ForeignKey(Movie, on_delete=models.CASCADE)
     EventWebsite = models.CharField(max_length=100)
@@ -30,7 +30,7 @@ class Reservation(models.Model):
     ReservationId = models.AutoField(primary_key=True)
     Owner = models.ForeignKey(User, on_delete=models.CASCADE)
     EventId = models.ForeignKey(Event, on_delete=models.CASCADE)
-    TicketsReserved = models.PositiveIntegerField()
+    TicketsReserved = models.IntegerField()
 
 
 class Watchlist(models.Model):
@@ -47,4 +47,3 @@ class Payment(models.Model):
     SecCode = models.CharField(max_length=256)
     Address = models.CharField(max_length=100)
     ZipCode = models.CharField(max_length=10)
-
