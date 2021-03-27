@@ -1,5 +1,5 @@
 from django.apps import AppConfig
 
 
-class FactsConfig(AppConfig):
+class MoviesConfig(AppConfig):
     name = 'movies'
