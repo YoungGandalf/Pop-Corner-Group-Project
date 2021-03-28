@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Signup</title>
+</head>
+<body>
+Welcome to the Signup Page!
+
+<p>
+        Here is the Database So Far:
+        <ol>
+            {% for User in Users %}
+            <li>{{ User.UserEmail }} </li>
+            <li>{{ User.UserPassword }} </li>
+            <li>{{ User.UserName }} </li>
+            <li>{{ User.UserPhoneNumber }} </li>
+            <li>{{ User.IsBusiness }} </li>
+            {% endfor %}
+        </ol>
+    </p>
+     <form action="{% url 'add' %}" method="post">
+        {% csrf_token %}
+        Enter your email: <br/>
+        <input type="email" name="email"><br/>
+         Enter your password: <br/>
+         <input type="password" name="password"><br/>
+         Enter your name: <br/>
+         <input type="text" name="name"><br/>
+         Enter your phone number: <br/>
+         <input type="text" name="number"><br/>
+         Are you a business: <br/>
+         <input type="checkbox", value="clicked" name="isbusiness"><br/>
+        <input type="submit">
+    </form>
+
+</body>
+</html>
