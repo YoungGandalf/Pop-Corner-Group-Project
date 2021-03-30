@@ -1,11 +1,17 @@
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+from .validators import (validate_password_length, validate_password_digit, validate_password_uppercase,
+                         validate_name_length, validate_phonenumber, validate_username_alphadigits)
 
 
 class User(models.Model):
-    UserEmail = models.EmailField(max_length=100, primary_key=True,null=False, blank=False)
-    UserPassword = models.CharField(max_length=256)
-    UserName = models.CharField(max_length=100)
-    UserPhoneNumber = models.CharField(max_length=20)
+    UserEmail = models.EmailField(max_length=100, primary_key=True)
+    UserPassword = models.CharField(max_length=256, validators=[validate_password_length, validate_password_digit,
+                                                                validate_password_uppercase])
+    UserName = models.CharField(max_length=100, validators=[validate_name_length, validate_username_alphadigits])
+    UserPhoneNumber = models.CharField(max_length=20, validators=[validate_phonenumber])
     IsBusiness = models.BooleanField(default=False)
 
 

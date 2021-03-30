@@ -1,10 +1,7 @@
 from django.shortcuts import render
-from django.http import HttpResponseRedirect
-# Create your views here.
-# from movies.models import PopCorner
-
-from django.urls import reverse
-from movies.models import User
+from .forms import UserForm
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login
 
 
 def index(request):
@@ -12,23 +9,36 @@ def index(request):
 
 
 def signup(request):
-    Users = User.objects.filter()
-    context = {
-        'Users': Users,
-    }
-    return render(request, 'movies/signup.html', context=context)
+    form = UserForm(request.POST or None)
 
+    if form.is_valid():
+        fs = form.save(commit=False)
+        UserEmail = form.cleaned_data.get('UserEmail')
+        UserPassword = form.cleaned_data.get('UserPassword')
+        UserName = form.cleaned_data.get('UserName')
+        UserPhoneNumber = form.cleaned_data.get('UserPhoneNumber')
+        IsBusiness = form.cleaned_data.get('IsBusiness')
 
-def add(request):
-    UserEmail = request.POST['email']
-    UserPassword = request.POST['password']
-    UserName = request.POST['name']
-    UserPhoneNumber = request.POST['number']
-    if request.POST.get("isbusiness") == "clicked":
-        IsBusiness = True
+        if UserPassword == UserPassword:
+            try:
+                user = User.objects.get(username=UserName)  # if able to get, user exists and must try another username
+                context = {'form': form,
+                           'error': 'The username you entered has already been taken. Please try another username.'}
+                return render(request, 'movies/signup.html', context)
+            except User.DoesNotExist:
+                user = User.objects.create_user(UserName, password=UserPassword,
+                                                email=UserEmail)
+                user.save()
+
+                login(request, user)
+
+                fs.user = request.user
+
+                fs.save()
+                form = UserForm(None)
+                context = {'form': form}
+                return render(request, 'movies/signup.html', context)
+
     else:
-        IsBusiness = False
-    Users = User(UserEmail=UserEmail,UserPassword=UserPassword,
-                 UserName=UserName,UserPhoneNumber=UserPhoneNumber,IsBusiness=IsBusiness)
-    Users.save()
-    return HttpResponseRedirect(reverse('signup'))
+        context = {'form': form}
+        return render(request, 'movies/signup.html', context)
