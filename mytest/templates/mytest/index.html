@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MyTest App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/all.css' %}">
+</head>
+<body>
+
+<h1>Hello!</h1>
+<img src="https://www.nydailynews.com/resizer/Ee9izZJ1zk1aij0aZ0lwemFgLoQ=/800x553/top/cloudfront-us-east-1.images.arcpublishing.com/tronc/LGGTNSKXKRH6LM53TFE4VDJIYI.jpg" alt="Smiley Face" class="center">
+<h2>This is my test app.</h2>
+
+<div class="container">
+    <p>
+        Here are some cat facts:
+        <ol>
+            {% for fact in facts %}
+            <li>{{ fact.text }} -- <img src="{{fact.image_url}}"/></li>
+            {% endfor %}
+        </ol>
+    </p>
+    <form action="{% url 'add' %}" method="post">
+        {% csrf_token %}
+        Enter a new cat fact: <br/>
+        <input type="text" name="fact"><br/>
+        If you'd like to add a picture, put the url here: <br/>
+        <input type="text" name="image_url">
+        <input type="submit"/>
+    </form>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+</body>
+</html>
