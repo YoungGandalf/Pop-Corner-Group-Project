@@ -21,7 +21,7 @@ Run the web application with the following command.
 ```sh
 (venv)$ python manage.py runserver
 ```
-### Clear Dataform
+### Clear Database
 Since we are in the initial phases of web development, we do not necessarily want to always have this data in our databases when we're running tests. So the following commands are used to clear the data in the MyUser database from movies.models.py and also from the built in django User model.
 ```sh
 >>> python manage.py shell
@@ -39,9 +39,9 @@ Since we are in the initial phases of web development, we do not necessarily wan
 >>> User.objects.all().delete()
 ```
 
-## Tests
+## Testing
 The following command will run the tests specified in tests.py. 
 ```sh
-(venv)$ python manage.py tests
+(venv)$ python manage.py test
 ```
 
