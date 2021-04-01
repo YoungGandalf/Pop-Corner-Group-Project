@@ -2,6 +2,7 @@ from django.shortcuts import render
 from .forms import UserForm
 from django.contrib.auth.models import User
 from django.contrib.auth import login
+from movies.models import MyUser
 
 
 def index(request):
@@ -15,7 +16,8 @@ def signup(request):
 
     # If the form is valid
     if form.is_valid():
-        fs = form.save(commit=False) # save the information from the form
+
+        fs = form.save(commit=False)  # save the information from the form
 
         # Get fields to store in user class
         UserEmail = form.cleaned_data.get('UserEmail')
@@ -29,24 +31,28 @@ def signup(request):
             user = User.objects.get(username=UserName)  # if the user already exists then prompt again
             context = {'form': form,
                        'error': 'The username you entered has already been taken. Please try another username.'}
-            return render(request, 'movies/signup.html', context) # return to same signup page
+            return render(request, 'movies/signup.html', context)  # return to same signup page
 
-        # When the user does not arleady exist in the system
+        # When the user does not already exist in the system
         except User.DoesNotExist:
             # Create a user with django's user model and save
             user = User.objects.create_user(UserName, password=UserPassword, email=UserEmail)
+            print(user.email)
             user.save()
 
-            login(request, user) # May want to remove this since it automatically logs in the user
+            login(request, user)  # May want to remove this since it automatically logs in the user
 
             # Save the form
             fs.user = request.user
             fs.save()
 
-            form = UserForm(None) # clear the UserForm so reloading will bring up a blank form
+            # Update the database so that the password in the database is also hashed
+            MyUser.objects.filter(UserEmail=user.email).update(UserPassword=user.password)
+
+            form = UserForm(None)  # clear the UserForm so reloading will bring up a blank form
             context = {'form': form}
-            return render(request, 'movies/signup.html', context) # return to same signup page
+            return render(request, 'movies/signup.html', context)  # return to same signup page
 
     else:
         context = {'form': form}
-        return render(request, 'movies/signup.html', context) # return to same signup page
+        return render(request, 'movies/signup.html', context)  # return to same signup page

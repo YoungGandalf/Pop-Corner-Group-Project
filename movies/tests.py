@@ -2,7 +2,7 @@ from django.urls import reverse
 
 from movies.forms import forms, UserForm
 from django.test import TestCase
-from movies.models import User
+from movies.models import MyUser
 
 
 # Create your tests here.
@@ -11,12 +11,12 @@ from movies.models import User
 class UserTestCase(TestCase):
     # Setup the test by creating one User Object
     def setUp(self):
-        User.objects.create(UserEmail="testing@gmail.com", UserPassword="Testing123", UserName="testing",
-                            UserPhoneNumber="123-456-7890", IsBusiness=False)
+        MyUser.objects.create(UserEmail="testing@gmail.com", UserPassword="Testing123", UserName="testing",
+                              UserPhoneNumber="123-456-7890", IsBusiness=False)
 
     # Test that one User object was created
     def test_user_created(self):
-        self.assertEqual(User.objects.count(), 1)
+        self.assertEqual(MyUser.objects.count(), 1)
 
     # Test fhe UserForm works for valid information
     def test_UserForm_valid(self):
@@ -30,8 +30,17 @@ class UserTestCase(TestCase):
                               'UserPhoneNumber': "987-654-3210", 'IsBusiness': False})
         self.assertFalse(form.is_valid())
 
+    # Testing User View with Valid Data (Should refresh back to the same page with a cleared form)
+    def test_add_valid_user_view(self):
+        # Valid Data
+        response = self.client.post(reverse('signup'),
+                                    data={'UserEmail': "testing12345@gmail.com", 'UserPassword': "Testing321",
+                                          'UserName': "testing321",
+                                          'UserPhoneNumber': "987-654-3210", 'IsBusiness': True})
+        self.assertEqual(response.status_code, 200)
+
     # Testing User View with Invalid Data (Should refresh back to the same page)
-    def test_add_user_view(self):
+    def test_add_invalid_user_view(self):
         # Invalid data fails.
         response = self.client.post(reverse('signup'),
                                     data={'UserEmail': "testing1@gmail.com", 'UserPassword': "",
@@ -40,3 +49,4 @@ class UserTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.failUnless(response.context['form'])
         self.failUnless(response.context['form'].errors)
+
