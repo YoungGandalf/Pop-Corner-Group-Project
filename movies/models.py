@@ -1,11 +1,15 @@
 from django.db import models
+# Validators: Validate the fields
+from .validators import (validate_password_length, validate_password_digit, validate_password_uppercase,
+                         validate_name_length, validate_phonenumber, validate_username_alphadigits)
 
 
 class User(models.Model):
-    UserEmail = models.CharField(max_length=100, primary_key=True)
-    UserPassword = models.CharField(max_length=256)
-    UserName = models.CharField(max_length=100)
-    UserPhoneNumber = models.CharField(max_length=20)
+    UserEmail = models.EmailField(max_length=100, primary_key=True, validators=[validate_name_length])
+    UserPassword = models.CharField(max_length=256, validators=[validate_password_length, validate_password_digit,
+                                                                validate_password_uppercase])
+    UserName = models.CharField(max_length=100, validators=[validate_name_length, validate_username_alphadigits])
+    UserPhoneNumber = models.CharField(max_length=20, validators=[validate_phonenumber])
     IsBusiness = models.BooleanField(default=False)
 
 
