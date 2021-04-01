@@ -4,7 +4,7 @@ from .validators import (validate_password_length, validate_password_digit, vali
                          validate_name_length, validate_phonenumber, validate_username_alphadigits)
 
 
-class User(models.Model):
+class MyUser(models.Model):
     UserEmail = models.EmailField(max_length=100, primary_key=True, validators=[validate_name_length])
     UserPassword = models.CharField(max_length=256, validators=[validate_password_length, validate_password_digit,
                                                                 validate_password_uppercase])
@@ -21,7 +21,7 @@ class Movie(models.Model):
 
 class Event(models.Model):
     EventId = models.AutoField(primary_key=True)
-    Owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    Owner = models.ForeignKey(MyUser, on_delete=models.CASCADE)
     EventAddress = models.CharField(max_length=100)
     AvailableTickets = models.IntegerField()
     TotalTickets = models.IntegerField()
@@ -32,20 +32,20 @@ class Event(models.Model):
 
 class Reservation(models.Model):
     ReservationId = models.AutoField(primary_key=True)
-    Owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    Owner = models.ForeignKey(MyUser, on_delete=models.CASCADE)
     EventId = models.ForeignKey(Event, on_delete=models.CASCADE)
     TicketsReserved = models.IntegerField()
 
 
 class Watchlist(models.Model):
     WatchlistId = models.AutoField(primary_key=True)
-    Owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    Owner = models.ForeignKey(MyUser, on_delete=models.CASCADE)
     MovieId = models.ForeignKey(Movie, on_delete=models.CASCADE)
 
 
 class Payment(models.Model):
     PaymentId = models.AutoField(primary_key=True)
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    owner = models.ForeignKey(MyUser, on_delete=models.CASCADE)
     CardNumber = models.CharField(max_length=256)
     ExpDate = models.CharField(max_length=256)
     SecCode = models.CharField(max_length=256)

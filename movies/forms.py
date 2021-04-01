@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import EmailInput, PasswordInput, CheckboxInput, ModelForm
 
-from movies.models import User
+from movies.models import MyUser
 
 
 # Form created for User Sign Up: Contains all relevant fields, widgets set for specific inputs, and labels
@@ -15,5 +15,5 @@ class UserForm(ModelForm):
     IsBusiness = forms.BooleanField(widget=CheckboxInput, required=False, label='Is A Business?')
 
     class Meta:
-        model = User
+        model = MyUser
         fields = ["UserEmail", "UserPassword", "UserName", "UserPhoneNumber", "IsBusiness"]
