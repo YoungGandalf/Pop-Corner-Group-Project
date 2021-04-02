@@ -6,6 +6,7 @@ from movies.models import MyUser
 
 # Form created for User Sign Up: Contains all relevant fields, widgets set for specific inputs, and labels
 class UserForm(ModelForm):
+
     UserEmail = forms.EmailField(widget=EmailInput, label='Email')
     UserPassword = forms.CharField(widget=PasswordInput, label='Password')
     UserName = forms.CharField(max_length=100, label='Username')
@@ -17,3 +18,5 @@ class UserForm(ModelForm):
     class Meta:
         model = MyUser
         fields = ["UserEmail", "UserPassword", "UserName", "UserPhoneNumber", "IsBusiness"]
+
+

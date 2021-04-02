@@ -50,3 +50,9 @@ class UserTestCase(TestCase):
         self.failUnless(response.context['form'])
         self.failUnless(response.context['form'].errors)
 
+# Tests for Login Case
+class LoginTestCase(TestCase):
+    def setUp(self):
+        MyUser.objects.create(UserEmail="testing@gmail.com", UserPassword="Testing123", UserName="testing",
+                              UserPhoneNumber="123-456-7890", IsBusiness=False)
+
