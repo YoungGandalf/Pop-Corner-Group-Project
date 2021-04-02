@@ -1,7 +1,8 @@
+from django.contrib.auth.models import User
 from django.urls import reverse
 
 from movies.forms import forms, UserForm
-from django.test import TestCase
+from django.test import TestCase, Client
 from movies.models import MyUser
 
 
@@ -49,4 +50,23 @@ class UserTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.failUnless(response.context['form'])
         self.failUnless(response.context['form'].errors)
+
+
+# Tests for Login Case
+class LoginTestCase(TestCase):
+    def setUp(self):
+        MyUser.objects.create(UserEmail="testing@gmail.com", UserPassword="Testing123", UserName="testing",
+                              UserPhoneNumber="123-456-7890", IsBusiness=False)
+        user = User.objects.create_user(username='testing', password='Testing123')
+        self.client = Client()
+
+    # Testing for successful login
+    def test_successful_login(self):
+        self.assertTrue(self.client.login(username='testing', password='Testing123'))
+
+    # Testing for unsuccessful login
+    def test_unsuccessful_login(self):
+        self.assertFalse(self.client.login(username='testing', password='wrong'))
+
+
 

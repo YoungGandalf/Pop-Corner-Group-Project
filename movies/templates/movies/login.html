@@ -1,14 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-
-
 <head>
     <meta charset="UTF-8">
-    <!-- Specifies the name of the tab -->
-    <title>Welcome to PopCorner!</title>
+    <title>Login to PopCorner</title>
 </head>
-
-<!-- Formatting the Navbar -->
+<!-- This sets up the navigation bar and needs to be moved to a header.html file-->
 <style>
 .menu {
     background-color: #fa6b58;
@@ -29,12 +25,11 @@
 }
 </style>
 
-<!-- Formatting the webpage and "header" -->
+<!-- Sorts out the formatting of the header -->
 <body style="background-color:#333333;">
 <h3 style="color:#FDEE87;font-size:150%;font-family:'Optima';">Welcome to...</h3>
 <h1 style="color:tomato;font-size:300%;font-family:'Noto Sans Coptic';text-align:center;background: #FDEE87">PopCorner</h1>
 
-<!-- Prints out the Navbar-->
 <div class ="menu">
     <a class ="active" href="/#index">Home</a>
     <a href ="/account">Account</a>
@@ -48,17 +43,29 @@
     <a href = "/logout">Logout</a>
 </div>
 
-<!-- Prints out the messages from login-->
-{% if messages %}
+<h1 style="color:tomato;font-size:150%;font-family:'Optima';">Login</h1>
+<!-- End of formatting -->
+
+<!-- Creating the Login Form -->
+ <form action="/login/" method="post">
+     {% csrf_token %}
+     <!-- Prints out messages -->
+     {% if messages %}
         <ul class="messages">
             {% for message in messages %}
                 <li  {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </li>
             {% endfor %}
         </ul>
-{% endif %}
+     {% endif %}
 
-<!-- Filler for now -->
-<p style="font-size:500%">Coming Soon: The Rest of this Page</p>
+     <!-- Login Form Blanks -->
+     Enter your username: <br/>
+     <input type="text" name="Username"><br/>
+     Enter your password: <br/>
+     <input type="password" name="Password"><br/>
+     <input type="submit">
+ </form>
+If you don't already have an account, <a href = "/signup"><strong>Sign Up</strong></a> instead.
 
 
 </body>

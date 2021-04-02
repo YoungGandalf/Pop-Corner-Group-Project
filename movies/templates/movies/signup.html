@@ -1,7 +1,45 @@
 <html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sign Up for PopCorner</title>
+</head>
 
-<body>
-<h1>Signup Page </h1>
+<style>
+.menu {
+    background-color: #fa6b58;
+    overflow: hidden;
+}
+.menu a{
+    float: left;
+    background-color: #FA6B58;
+    color: #FDEE87;
+    text-align: center;
+    padding: 15px 70px;
+    text-decoration: none;
+    font-size: 17px;
+}
+.menu a:hover, a:active {
+    background-color: #FDEE87;
+    color: #FA6B58;
+}
+</style>
+
+<body style="background-color:#333333;">
+<h3 style="color:#FDEE87;font-size:150%;font-family:'Optima';">Welcome to...</h3>
+<h1 style="color:tomato;font-size:300%;font-family:'Noto Sans Coptic';text-align:center;background: #FDEE87">PopCorner</h1>
+<div class ="menu">
+    <a class ="active" href="/#index">Home</a>
+    <a href ="/account">Account</a>
+    <a href ="/movies">Movies</a>
+    <a href ="/locations">Locations</a>
+    <a href ="/about">About Us</a>
+    <!--FIX THE FORMAT/ACCESS OF THIS LATER!!
+        THIS IS JUST FOR EASE OF ACCESS FOR TESTING PURPOSES-->
+    <a href = "/signup">Sign Up </a>
+    <a href = "/login">Login</a>
+    <a href = "/logout">Logout</a>
+</div>
+<h1 style="color:tomato;font-size:150%;font-family:'Optima';">Sign Up</h1>
 
 <form action="" method="POST">
 {% csrf_token %}
@@ -14,6 +52,6 @@
 <input type="submit" name="submit" value="Sign up"/>
 </form>
 
-</body>
 
+</body>
 </html>
