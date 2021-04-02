@@ -12,6 +12,7 @@ class MyUser(models.Model):
     UserPhoneNumber = models.CharField(max_length=20, validators=[validate_phonenumber])
     IsBusiness = models.BooleanField(default=False)
 
+
 class Movie(models.Model):
     MovieId = models.AutoField(primary_key=True)
     MovieName = models.CharField(max_length=100)
