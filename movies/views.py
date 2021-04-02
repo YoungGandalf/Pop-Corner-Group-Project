@@ -84,6 +84,7 @@ def login_user(request):
         form = AuthenticationForm()
         return render(request, 'movies/login.html', {'form': form})
 
+
 # Logout View
 def logout_user(request):
     logout(request)
