@@ -1,7 +1,6 @@
 from django.db import models
 # Validators: Validate the fields
-from .validators import (validate_password_length, validate_password_digit, validate_password_uppercase,
-                         validate_name_length, validate_phonenumber, validate_username_alphadigits)
+from .validators import *
 
 
 class MyUser(models.Model):
@@ -46,8 +45,8 @@ class Watchlist(models.Model):
 class Payment(models.Model):
     PaymentId = models.AutoField(primary_key=True)
     owner = models.ForeignKey(MyUser, on_delete=models.CASCADE)
-    CardNumber = models.CharField(max_length=256)
-    ExpDate = models.CharField(max_length=256)
-    SecCode = models.CharField(max_length=256)
+    CardNumber = models.CharField(max_length=256, validators=[validate_card_number])
+    ExpDate = models.CharField(max_length=256, validators=[validate_expiration_date])
+    SecCode = models.CharField(max_length=256, validators=[validate_security_code])
     Address = models.CharField(max_length=100)
-    ZipCode = models.CharField(max_length=10)
+    ZipCode = models.CharField(max_length=10, validators=[validate_zip_code])

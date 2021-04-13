@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .forms import UserForm
+from .forms import *
 from django.contrib.auth.models import User
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import AuthenticationForm
@@ -91,3 +91,7 @@ def logout_user(request):
     messages.info(request, "You have logged out successfully!")
     return redirect('/')
 
+
+def add_payment(request):
+    form = PaymentForm(request.POST or None)
+    return render(request, 'movies/payment.html', {'form': form})

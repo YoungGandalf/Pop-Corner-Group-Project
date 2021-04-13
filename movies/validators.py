@@ -39,7 +39,7 @@ def validate_password_digit(value):
 
 # Validates the password contains at least one uppercase character
 def validate_password_uppercase(value):
-    if not re.search(r"[A-Z]+", value): # searches for an uppercase character
+    if not re.search(r"[A-Z]+", value):  # searches for an uppercase character
         raise ValidationError("The password must contain at least one uppercase character")
     else:
         return value
@@ -57,3 +57,65 @@ def validate_phonenumber(value):
             "The phone number must be in format (###)###-###, ###-###-###, ##########, or ########### ")
     else:
         return value
+
+
+def validate_zip_code(value):
+    # Regex to check for 5 digits in a row and no other data in the field
+    regex = r"^\d{5}$"
+
+    if re.search(regex, value):
+        return value
+    else:
+        raise ValidationError("The zip code must be 5 digits 0-9")
+
+
+def validate_security_code(value):
+    # Regex to check for 3 digits in succession with nothing surrounding it
+    regex = r"^\d{3}$"
+
+    if re.search(regex, value):
+        return value
+    else:
+        raise ValidationError("The security code must be 3 digits 0-9")
+
+
+def validate_expiration_date(value):
+    # Regex to check for proper date format of mm/yy
+    regex = r"^^((0[1-9])|(1[0-2]))\/[2]\d$$"
+
+    if re.search(regex, value):
+        return value
+    else:
+        raise ValidationError("Please enter a valid expiration date in the mm/yy format")
+
+
+def validate_card_number(value):
+    # Split credit card number based on spaces or dashes between the numbers
+
+    NoSpace = value.split(" ")
+    NoDash = value.split("-")
+    separator = ""
+
+    # Rejoin card after splitting on specific separators
+
+    separator.join(NoSpace)
+    separator.join(NoDash)
+
+    # Regex to search string for exactly 16 digits with nothing else before or after
+    regex = r"^\d{16}$"
+
+    if len(NoSpace) != 16 and len(NoDash) != 16:
+        raise ValidationError(
+            "Please enter a 16 digit credit card number using spaces, dashes, or nothing in between the numbers.")
+    else:
+
+        # Return formatted card number based on which format was given
+        if re.search(regex, NoSpace):
+            return NoSpace
+
+        elif re.search(regex, NoDash):
+            return NoDash
+
+        else:
+            raise ValidationError(
+                "The credit card number you have entered is not valid")
