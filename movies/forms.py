@@ -26,7 +26,7 @@ class PaymentForm(ModelForm):
     CardNumber = forms.CharField(max_length=20, label='Card Number')
     ExpDate = forms.CharField(max_length=5, label='Expiration Date (mm/yy)')
     SecCode = forms.CharField(max_length=3, label='Security Code')
-    BillingAddress = forms.CharField(max_length=100, label='Billing Address')
+    Address = forms.CharField(max_length=100, label='Billing Address')
     ZipCode = forms.CharField(max_length=5, label='Zip Code')
 
     class Meta:

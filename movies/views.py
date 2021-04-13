@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
-from .models import MyUser
+from .models import *
 
 
 def index(request):
@@ -40,7 +40,7 @@ def signup(request):
             user = User.objects.create_user(UserName, password=UserPassword, email=UserEmail)
             user.save()
 
-            login(request, user) # May want to remove this since it automatically logs in the user
+            login(request, user)  # May want to remove this since it automatically logs in the user
 
             # Save the form
             fs.user = request.user
@@ -62,7 +62,7 @@ def signup(request):
 def login_user(request):
     # Already Logged In
     if request.user.is_authenticated:
-        messages.info(request,"You are already logged in!")
+        messages.info(request, "You are already logged in!")
         return render(request, 'movies/index.html')
 
     if request.method == 'POST':
@@ -93,5 +93,40 @@ def logout_user(request):
 
 
 def add_payment(request):
+
+    # Initialize form on the page
     form = PaymentForm(request.POST or None)
-    return render(request, 'movies/payment.html', {'form': form})
+
+    # Check if user is logged in
+    if request.user.is_authenticated:
+
+        if form.is_valid():
+
+            # Grab current users email for foreign key in Payment object creation,
+            username = request.user.get_username()
+            currentUser = MyUser.objects.get(UserName=username)
+
+            # Create new payment object and save
+            payment = Payment.objects.create(owner_id=currentUser.UserEmail,
+                                             CardNumber=form.cleaned_data.get('CardNumber'),
+                                             ExpDate=form.cleaned_data.get('ExpDate'),
+                                             SecCode=form.cleaned_data.get('SecCode'),
+                                             Address=form.cleaned_data.get('Address'),
+                                             ZipCode=form.cleaned_data.get('ZipCode'))
+
+            payment.save()
+
+            # Clear the form and return to the home page
+            form = PaymentForm(None)
+            context = {'form': form}
+            return render(request, 'movies/index.html', context)
+
+        else:
+            # Reload page if form is not valid
+            context = {'form': form}
+            return render(request, 'movies/payment.html', context)
+
+    # User must be logged into their account to add a credit card
+    else:
+        messages.info(request, "You must login to add payment information")
+        return redirect('/login')

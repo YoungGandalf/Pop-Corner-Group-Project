@@ -102,15 +102,18 @@ def validate_card_number(value):
     separator.join(NoDash)
 
     # Regex to search string for exactly 16 digits with nothing else before or after
-    regex = r"^\d{16}$"
+    regex = r"^([0-9]){16}$"
 
-    if len(NoSpace) != 16 and len(NoDash) != 16:
+    if len(NoSpace) != 16 and len(NoDash) != 16 and not re.search(regex, value):
         raise ValidationError(
             "Please enter a 16 digit credit card number using spaces, dashes, or nothing in between the numbers.")
     else:
 
         # Return formatted card number based on which format was given
-        if re.search(regex, NoSpace):
+        if re.search(regex, value):
+            return value
+
+        elif re.search(regex, NoSpace):
             return NoSpace
 
         elif re.search(regex, NoDash):
