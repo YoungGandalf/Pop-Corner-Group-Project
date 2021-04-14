@@ -90,35 +90,15 @@ def validate_expiration_date(value):
 
 
 def validate_card_number(value):
-    # Split credit card number based on spaces or dashes between the numbers
 
-    NoSpace = value.split(" ")
-    NoDash = value.split("-")
-    separator = ""
+    NoSpaceRegex = r"^([0-9]){16}$"
+    DashRegex = r"^\d{4}-\d{4}-\d{4}-\d{4}$"
+    SpaceRegex = r"^\d{4}\s\d{4}\s\d{4}\s\d{4}$"
 
-    # Rejoin card after splitting on specific separators
+    # Return formatted card number based on which format was given
+    if re.search(NoSpaceRegex, value) or re.search(DashRegex, value) or re.search(SpaceRegex, value):
+        return value
 
-    separator.join(NoSpace)
-    separator.join(NoDash)
-
-    # Regex to search string for exactly 16 digits with nothing else before or after
-    regex = r"^([0-9]){16}$"
-
-    if len(NoSpace) != 16 and len(NoDash) != 16 and not re.search(regex, value):
+    else:
         raise ValidationError(
             "Please enter a 16 digit credit card number using spaces, dashes, or nothing in between the numbers.")
-    else:
-
-        # Return formatted card number based on which format was given
-        if re.search(regex, value):
-            return value
-
-        elif re.search(regex, NoSpace):
-            return NoSpace
-
-        elif re.search(regex, NoDash):
-            return NoDash
-
-        else:
-            raise ValidationError(
-                "The credit card number you have entered is not valid")

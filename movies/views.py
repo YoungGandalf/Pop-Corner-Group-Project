@@ -93,7 +93,6 @@ def logout_user(request):
 
 
 def add_payment(request):
-
     # Initialize form on the page
     form = PaymentForm(request.POST or None)
 
@@ -107,12 +106,12 @@ def add_payment(request):
             currentUser = MyUser.objects.get(UserName=username)
 
             # Create new payment object and save
-            payment = Payment.objects.create(owner_id=currentUser.UserEmail,
-                                             CardNumber=form.cleaned_data.get('CardNumber'),
-                                             ExpDate=form.cleaned_data.get('ExpDate'),
-                                             SecCode=form.cleaned_data.get('SecCode'),
-                                             Address=form.cleaned_data.get('Address'),
-                                             ZipCode=form.cleaned_data.get('ZipCode'))
+            payment = Payment(Owner_id=currentUser.UserEmail,
+                              CardNumber=form.cleaned_data.get('CardNumber'),
+                              ExpDate=form.cleaned_data.get('ExpDate'),
+                              SecCode=form.cleaned_data.get('SecCode'),
+                              Address=form.cleaned_data.get('Address'),
+                              ZipCode=form.cleaned_data.get('ZipCode'))
 
             payment.save()
 

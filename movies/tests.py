@@ -1,9 +1,9 @@
 from django.contrib.auth.models import User
 from django.urls import reverse
 
-from movies.forms import forms, UserForm
+from movies.forms import *
 from django.test import TestCase, Client
-from movies.models import MyUser
+from movies.models import *
 
 
 # Create your tests here.
@@ -58,7 +58,6 @@ class LoginTestCase(TestCase):
         MyUser.objects.create(UserEmail="testing@gmail.com", UserPassword="Testing123", UserName="testing",
                               UserPhoneNumber="123-456-7890", IsBusiness=False)
         user = User.objects.create_user(username='testing', password='Testing123')
-        self.client = Client()
 
     # Testing for successful login
     def test_successful_login(self):
@@ -69,4 +68,39 @@ class LoginTestCase(TestCase):
         self.assertFalse(self.client.login(username='testing', password='wrong'))
 
 
+class PaymentTestCase(TestCase):
+    def setUp(self):
+        testUser = MyUser(UserEmail="testing@gmail.com", UserPassword="Testing123", UserName="testing",
+               UserPhoneNumber="123-456-7890", IsBusiness=False)
+        testUser.save()
+        user = User.objects.create_user(username='testing', password='Testing123')
+        self.client.login(username='testing', password='Testing123')
 
+    def test_PaymentForm_valid(self):
+        form = PaymentForm(data={'CardNumber': '0123654789654123', 'ExpDate': '02/25', 'SecCode': '221',
+                                 'Address': '123 test drive', 'ZipCode': '21227'})
+        self.assertTrue(form.is_valid())
+
+    def test_PaymentForm_invalid(self):
+        form = PaymentForm(data={'CardNumber': '0123654789654123', 'ExpDate': '02/55', 'SecCode': '221',
+                                 'Address': '123 test drive', 'ZipCode': '21227'})
+        self.assertFalse(form.is_valid())
+
+    def test_add_valid_payment(self):
+
+        self.client.login(username='testing', password='Testing123')
+
+        response = self.client.post('/payment/',
+                                    data={'CardNumber': '0123654789654123', 'ExpDate': '02/25', 'SecCode': '221',
+                                          'Address': '123 test drive', 'ZipCode': '21227'})
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_add_invalid_payment(self):
+        response = self.client.post(reverse('payment'),
+                                    data={'CardNumber': 'This is not a number', 'ExpDate': '02/25', 'SecCode': '221',
+                                          'Address': '123 test drive', 'ZipCode': '21227'})
+
+        self.assertEqual(response.status_code, 200)
+        self.failUnless(response.context['form'])
+        self.failUnless(response.context['form'].errors)
