@@ -1,7 +1,7 @@
 from django import forms
-from django.forms import EmailInput, PasswordInput, CheckboxInput, ModelForm
+from django.forms import EmailInput, PasswordInput, CheckboxInput, ModelForm, NumberInput, TextInput
 
-from movies.models import MyUser
+from movies.models import *
 
 
 # Form created for User Sign Up: Contains all relevant fields, widgets set for specific inputs, and labels
@@ -20,3 +20,26 @@ class UserForm(ModelForm):
         fields = ["UserEmail", "UserPassword", "UserName", "UserPhoneNumber", "IsBusiness"]
 
 
+# Form created for adding payment information: Contains all relevant fields, widgets set for specific inputs, and labels
+class PaymentForm(ModelForm):
+
+    CardNumber = forms.CharField(max_length=20, label='Card Number')
+    ExpDate = forms.CharField(max_length=5, label='Expiration Date (mm/yy)')
+    SecCode = forms.CharField(max_length=3, label='Security Code')
+    Address = forms.CharField(max_length=100, label='Billing Address')
+    ZipCode = forms.CharField(max_length=5, label='Zip Code')
+
+    class Meta:
+        model = Payment
+        fields = ["CardNumber", "ExpDate", "SecCode", "Address", "ZipCode"]
+
+
+# Form created for adding reservation information: Contains all relevant fields, widgets set for specific inputs,
+# and labels
+class ReservationForm(ModelForm):
+    TicketsReserved = forms.IntegerField(widget=TextInput, label='Tickets Reserved')
+    temp = forms.IntegerField(widget=TextInput, label='temp') # Temporary input to hold the current event ID
+
+    class Meta:
+        model = Reservation
+        fields = ["TicketsReserved", "temp"]
