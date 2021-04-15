@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add your reservation information</title>
+</head>
+
+<style>
+.menu {
+    background-color: #fa6b58;
+    overflow: hidden;
+}
+.menu a{
+    float: left;
+    background-color: #FA6B58;
+    color: #FDEE87;
+    text-align: center;
+    padding: 15px 70px;
+    text-decoration: none;
+    font-size: 17px;
+}
+.menu a:hover, a:active {
+    background-color: #FDEE87;
+    color: #FA6B58;
+}
+</style>
+<body style="background-color:#333333;">
+<h3 style="color:#FDEE87;font-size:150%;font-family:'Optima';">Welcome to...</h3>
+<h1 style="color:tomato;font-size:300%;font-family:'Noto Sans Coptic';text-align:center;background: #FDEE87">PopCorner</h1>
+<div class ="menu">
+    <a class ="active" href="/#index">Home</a>
+    <a href ="/account">Account</a>
+    <a href ="/movies">Movies</a>
+    <a href ="/locations">Locations</a>
+    <a href ="/about">About Us</a>
+    <!--FIX THE FORMAT/ACCESS OF THIS LATER!!
+        THIS IS JUST FOR EASE OF ACCESS FOR TESTING PURPOSES-->
+    <a href = "/signup">Sign Up </a>
+    <a href = "/login">Login</a>
+    <a href = "/logout">Logout</a>
+    <a href = "/payment">Payment</a>
+    <a href = "/reservation">Reservation</a>
+</div>
+<h1 style="color:tomato;font-size:150%;font-family:'Optima';">Reservation Info</h1>
+
+
+
+<p>
+        Here are possible movies to watch with the associating dates and times:
+        <ol>
+
+            {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                        <li  {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            {% if error %}
+                {{ error }}
+            {% endif %}
+
+            {% for Event in Events %}
+                {% if Event.AvailableTickets > 0 %}
+                     <!-- Print out Relevant Information for the Movie-->
+                    <li>Movie Name: {{ Event.MovieId.MovieName }}  <br>
+                        Event Address: {{ Event.EventAddress }} <br>
+                        Event Date:{{ Event.EventDate }} </li>
+                        Number of Tickets Available: {{ Event.AvailableTickets }}
+                        <form action="/add/" method="POST">
+                            {% csrf_token %}
+                            <!-- Ask User for the number of tickets -->
+                            How many tickets would you like to buy?
+                            <input type="integer", name="tickets"><br/>
+                            <!-- Store the current Event ID -->
+                            <input type="hidden" value={{ Event.EventId }} name=tempId readonly>
+                            <!-- FIX: Submit Button should only show up once -->
+                            <input type="submit" name="submit" value="Add Reservation"/>
+                        </form>
+                {% endif %}
+            {% endfor %}
+        </ol>
+</p>
+
