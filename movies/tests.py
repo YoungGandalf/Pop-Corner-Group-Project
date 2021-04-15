@@ -71,7 +71,7 @@ class LoginTestCase(TestCase):
 class PaymentTestCase(TestCase):
     def setUp(self):
         testUser = MyUser(UserEmail="testing@gmail.com", UserPassword="Testing123", UserName="testing",
-               UserPhoneNumber="123-456-7890", IsBusiness=False)
+                          UserPhoneNumber="123-456-7890", IsBusiness=False)
         testUser.save()
         user = User.objects.create_user(username='testing', password='Testing123')
         self.client.login(username='testing', password='Testing123')
@@ -87,7 +87,6 @@ class PaymentTestCase(TestCase):
         self.assertFalse(form.is_valid())
 
     def test_add_valid_payment(self):
-
         self.client.login(username='testing', password='Testing123')
 
         response = self.client.post('/payment/',
@@ -104,6 +103,7 @@ class PaymentTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.failUnless(response.context['form'])
         self.failUnless(response.context['form'].errors)
+
 
 # Tests for creating a reservation
 class ReservationTestCase(TestCase):
