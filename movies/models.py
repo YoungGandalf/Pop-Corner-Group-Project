@@ -26,14 +26,14 @@ class Event(models.Model):
     TotalTickets = models.IntegerField()
     EventDate = models.DateTimeField()
     MovieId = models.ForeignKey('Movie', on_delete=models.CASCADE)
-    EventWebsite = models.URLField(max_length=100)
+    EventWebsite = models.CharField(max_length=100)
 
 
 class Reservation(models.Model):
     ReservationId = models.AutoField(primary_key=True)
     Owner = models.ForeignKey('MyUser', on_delete=models.CASCADE)
     EventId = models.ForeignKey('Event', on_delete=models.CASCADE)
-    TicketsReserved = models.IntegerField(validators=[validate_tickets_reserved])
+    TicketsReserved = models.IntegerField()
 
 
 class Watchlist(models.Model):

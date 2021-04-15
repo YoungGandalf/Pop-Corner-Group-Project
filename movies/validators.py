@@ -81,7 +81,7 @@ def validate_security_code(value):
 
 def validate_expiration_date(value):
     # Regex to check for proper date format of mm/yy
-    regex = r"^^((0[1-9])|(1[0-2]))\/[2]\d$$"
+    regex = r"^((0[1-9])|(1[0-2]))\/[2]\d$"
 
     if re.search(regex, value):
         return value
@@ -90,6 +90,7 @@ def validate_expiration_date(value):
 
 
 def validate_card_number(value):
+
     NoSpaceRegex = r"^([0-9]){16}$"
     DashRegex = r"^\d{4}-\d{4}-\d{4}-\d{4}$"
     SpaceRegex = r"^\d{4}\s\d{4}\s\d{4}\s\d{4}$"
@@ -101,10 +102,3 @@ def validate_card_number(value):
     else:
         raise ValidationError(
             "Please enter a 16 digit credit card number using spaces, dashes, or nothing in between the numbers.")
-
-
-# Validates the number of tickets the user reserved
-def validate_tickets_reserved(value):
-    if value <= 0:
-        raise ValidationError(
-            "The number of tickets you reserve must be an integer greater than 1")

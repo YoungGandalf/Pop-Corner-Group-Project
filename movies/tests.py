@@ -19,7 +19,7 @@ class UserTestCase(TestCase):
     def test_user_created(self):
         self.assertEqual(MyUser.objects.count(), 1)
 
-    # Test the UserForm works for valid information
+    # Test fhe UserForm works for valid information
     def test_UserForm_valid(self):
         form = UserForm(data={'UserEmail': "testing1@gmail.com", 'UserPassword': "Testing321", 'UserName': "testing1",
                               'UserPhoneNumber': "987-654-3210", 'IsBusiness': False})
@@ -71,7 +71,7 @@ class LoginTestCase(TestCase):
 class PaymentTestCase(TestCase):
     def setUp(self):
         testUser = MyUser(UserEmail="testing@gmail.com", UserPassword="Testing123", UserName="testing",
-                          UserPhoneNumber="123-456-7890", IsBusiness=False)
+               UserPhoneNumber="123-456-7890", IsBusiness=False)
         testUser.save()
         user = User.objects.create_user(username='testing', password='Testing123')
         self.client.login(username='testing', password='Testing123')
@@ -87,6 +87,7 @@ class PaymentTestCase(TestCase):
         self.assertFalse(form.is_valid())
 
     def test_add_valid_payment(self):
+
         self.client.login(username='testing', password='Testing123')
 
         response = self.client.post('/payment/',
@@ -103,35 +104,3 @@ class PaymentTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.failUnless(response.context['form'])
         self.failUnless(response.context['form'].errors)
-
-
-# Tests for creating a reservation
-class ReservationTestCase(TestCase):
-    # Need to initialize a user that is logged in, an owner (MyUser) who owns the event, a movie and possible
-    def setUp(self):
-        testOwner = MyUser(UserEmail="owner@gmail.com", UserPassword="Owner123", UserName="owner",
-                           UserPhoneNumber="123-456-7890", IsBusiness=True)
-        testOwner.save()
-        testUser = MyUser(UserEmail="testing@gmail.com", UserPassword="Testing123", UserName="testing",
-                          UserPhoneNumber="123-456-7890", IsBusiness=False)
-        testUser.save()
-        testMovie = Movie(MovieName="Aladdin", MovieDuration="128")
-        testMovie.save()
-        testEvent = Event(Owner_id="owner@gmail.com", EventAddress="5142 Owner Road Business California 12345",
-                          AvailableTickets=10, TotalTickets=10, EventDate='2021-10-25 10:20:01', MovieId_id=1,
-                          EventWebsite="www.business.com")
-        testEvent.save()
-        user = User.objects.create_user(username='testing', password='Testing123')
-        self.client.login(username='testing', password='Testing123')
-
-    # Test the ReservationForm works for valid information
-    def test_ReservationForm_valid(self):
-        form = ReservationForm(data={'TicketsReserved': '2', 'temp': '1'})
-        self.assertTrue(form.is_valid())
-
-    # Test the ReservationForm works for invalid information
-    def test_ReservationForm_invalid(self):
-        # User can't enter a non negative ticket number
-        form = ReservationForm(data={'TicketsReserved': '0', 'temp': '1'})
-        self.assertFalse(form.is_valid())
-
