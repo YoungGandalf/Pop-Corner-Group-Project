@@ -43,34 +43,38 @@
 </div>
 <h1 style="color:tomato;font-size:150%;font-family:'Optima';">Reservation Info</h1>
 
-<form action="/reservation/" method="POST">
-{% csrf_token %}
+
+
 <p>
         Here are possible movies to watch with the associating dates and times:
         <ol>
+
+            {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                        <li  {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            {% if error %}
+                {{ error }}
+            {% endif %}
+
             {% for Event in Events %}
                 {% if Event.AvailableTickets > 0 %}
                      <!--Relevant Information for the Movie-->
-                    <li>{{ Event.EventId}} {{ Event.MovieId.MovieName }} {{ Event.EventAddress }} {{ Event.EventDate }} </li>
+                    <li>Movie Name: {{ Event.MovieId.MovieName }}  <br>
+                        Event Address: {{ Event.EventAddress }} <br>
+                        Event Date:{{ Event.EventDate }} </li>
+                        <form action="/add/" method="POST">
+                            {% csrf_token %}
+                            How many tickets would you like to buy?
+                            <input type="integer", name="tickets"><br/>
+                            <input type="hidden" value={{ Event.EventId }} name=tempId readonly>
+                            <input type="submit" name="submit" value="Add Payment"/>
+                        </form>
                 {% endif %}
             {% endfor %}
         </ol>
-    </p>
-</form>
-
-<form action="/add/" method="POST">
-{% csrf_token %}
-    <! -- Print out errors before the textbox on the form -->
-{% if error %}
-    {{ error }}
-{% endif %}
-    <! -- Print out each textbox in the form -->
-{{ form.as_p }}
-<input type="submit" name="submit" value="Add Reservation"/>
-</form>
-
-</body>
-</html>
-
-
+</p>
 

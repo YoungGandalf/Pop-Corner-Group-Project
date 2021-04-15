@@ -123,6 +123,7 @@ def add_payment(request):
         else:
             # Reload page if form is not valid
             context = {'form': form}
+            messages.error(request, 'Invalid Input')
             return render(request, 'movies/payment.html', context)
 
     # User must be logged into their account to add a credit card
@@ -140,13 +141,22 @@ def reservation(request):
 
 
 def add(request):
-    Events = Event.objects.filter()
-    context = {
-        'Events': Events,
-    }
+
+    # Get Input Information
+    numTickets = request.POST['tickets']
+    if int(numTickets) <= 0:
+        messages.error(request, "The number of tickets you reserve must be an integer greater than 1")
+        Events = Event.objects.filter()
+        context = {
+            'Events': Events,
+        }
+        return render(request, 'movies/reservation.html', context)
+    eventID = request.POST['tempId']
+
+    # Place information into the form and authenticate
 
     # Initialize form on the page
-    form = ReservationForm(request.POST or None)
+    form = ReservationForm(data={'TicketsReserved': numTickets, 'temp': eventID})
 
     # Check if user is logged in
     if request.user.is_authenticated:
@@ -160,6 +170,13 @@ def add(request):
 
             # Need to update the Event with the current number of tickets available
             currentEvent.AvailableTickets = currentEvent.AvailableTickets - form.cleaned_data.get('TicketsReserved')
+            if currentEvent.AvailableTickets < 0:
+                messages.error(request, "The number of tickets you reserved must be less than this input")
+                Events = Event.objects.filter()
+                context = {
+                    'Events': Events,
+                }
+                return render(request, 'movies/reservation.html', context)
             currentEvent.save()
 
             # Create new payment object and save
@@ -171,12 +188,16 @@ def add(request):
 
             # Clear the form and return to the home page
             form = ReservationForm(None)
-            context = {'form': form}
-            return render(request, 'movies/purchase.html', context)
+            #context = {'form': form}
+            return redirect('/payment')
 
         else:
             # Reload page if form is not valid
             context = {'form': form}
+            Events = Event.objects.filter()
+            context = {
+                'Events': Events,
+            }
             return render(request, 'movies/reservation.html', context)
 
     # User must be logged into their account to add a credit card
