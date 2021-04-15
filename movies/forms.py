@@ -32,10 +32,11 @@ class PaymentForm(ModelForm):
         fields = ["CardNumber", "ExpDate", "SecCode", "Address", "ZipCode"]
 
 
-# Form created for adding payment information: Contains all relevant fields, widgets set for specific inputs, and labels
+# Form created for adding reservation information: Contains all relevant fields, widgets set for specific inputs,
+# and labels
 class ReservationForm(ModelForm):
     TicketsReserved = forms.IntegerField(widget=TextInput, label='Tickets Reserved')
-    temp = forms.IntegerField(widget=TextInput, label='temp')
+    temp = forms.IntegerField(widget=TextInput, label='temp') # Temporary input to hold the current event ID
 
     class Meta:
         model = Reservation

@@ -103,6 +103,7 @@ def validate_card_number(value):
             "Please enter a 16 digit credit card number using spaces, dashes, or nothing in between the numbers.")
 
 
+# Validates the number of tickets the user reserved
 def validate_tickets_reserved(value):
     if value <= 0:
         raise ValidationError(

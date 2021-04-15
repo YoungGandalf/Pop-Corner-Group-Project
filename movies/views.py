@@ -132,6 +132,7 @@ def add_payment(request):
         return redirect('/login')
 
 
+# Used for the for loop in order to print out event information
 def reservation(request):
     Events = Event.objects.filter()
     context = {
@@ -140,67 +141,74 @@ def reservation(request):
     return render(request, 'movies/reservation.html', context=context)
 
 
+# Add reservation to the database
 def add(request):
 
-    # Get Input Information
+    # Get number of tickets the user put in
     numTickets = request.POST['tickets']
+
+    # Validate the number of tickets the user placed
     if int(numTickets) <= 0:
+        # If it failed then reprompt the user for another input
         messages.error(request, "The number of tickets you reserve must be an integer greater than 1")
         Events = Event.objects.filter()
         context = {
             'Events': Events,
         }
         return render(request, 'movies/reservation.html', context)
+
+    # Get current Event ID
     eventID = request.POST['tempId']
 
     # Place information into the form and authenticate
-
-    # Initialize form on the page
     form = ReservationForm(data={'TicketsReserved': numTickets, 'temp': eventID})
 
     # Check if user is logged in
     if request.user.is_authenticated:
 
+        # Check if form is valid
         if form.is_valid():
 
-            # Grab current users email for foreign key in Payment object creation,
+            # Grab current users email for foreign key in Reservation object creation,
             username = request.user.get_username()
             currentUser = MyUser.objects.get(UserName=username)
+            # Get Event associated with the tempID
             currentEvent = Event.objects.get(EventId=form.cleaned_data.get('temp'))
 
             # Need to update the Event with the current number of tickets available
             currentEvent.AvailableTickets = currentEvent.AvailableTickets - form.cleaned_data.get('TicketsReserved')
+            # Make sure the ticket number entered was valid
             if currentEvent.AvailableTickets < 0:
+                # If it failed then reprompt the user for another input
                 messages.error(request, "The number of tickets you reserved must be less than this input")
                 Events = Event.objects.filter()
                 context = {
                     'Events': Events,
                 }
                 return render(request, 'movies/reservation.html', context)
+            # Save the updated information in the database
             currentEvent.save()
 
-            # Create new payment object and save
+            # Create new reservation object and save it with the appropriate information
             reservation = Reservation(Owner_id=currentUser.UserEmail,
                                       EventId_id=currentEvent.EventId,
                                       TicketsReserved=form.cleaned_data.get('TicketsReserved'))
-
+            # Save the updated reservation in the database
             reservation.save()
 
-            # Clear the form and return to the home page
+            # Clear the form and go to the payment page to proceed
             form = ReservationForm(None)
-            #context = {'form': form}
             return redirect('/payment')
 
         else:
             # Reload page if form is not valid
-            context = {'form': form}
             Events = Event.objects.filter()
             context = {
                 'Events': Events,
             }
             return render(request, 'movies/reservation.html', context)
 
-    # User must be logged into their account to add a credit card
+    # User must be logged into their account to add a reservation
     else:
         messages.info(request, "You must login to create a purchase")
         return redirect('/login')

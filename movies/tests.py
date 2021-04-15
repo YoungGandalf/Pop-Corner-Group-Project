@@ -19,7 +19,7 @@ class UserTestCase(TestCase):
     def test_user_created(self):
         self.assertEqual(MyUser.objects.count(), 1)
 
-    # Test fhe UserForm works for valid information
+    # Test the UserForm works for valid information
     def test_UserForm_valid(self):
         form = UserForm(data={'UserEmail': "testing1@gmail.com", 'UserPassword': "Testing321", 'UserName': "testing1",
                               'UserPhoneNumber': "987-654-3210", 'IsBusiness': False})
@@ -105,7 +105,9 @@ class PaymentTestCase(TestCase):
         self.failUnless(response.context['form'].errors)
 
 
+# Tests for creating a reservation
 class ReservationTestCase(TestCase):
+    # Need to initialize a user that is logged in, an owner (MyUser) who owns the event, a movie and possible
     def setUp(self):
         testOwner = MyUser(UserEmail="owner@gmail.com", UserPassword="Owner123", UserName="owner",
                            UserPhoneNumber="123-456-7890", IsBusiness=True)
@@ -122,10 +124,14 @@ class ReservationTestCase(TestCase):
         user = User.objects.create_user(username='testing', password='Testing123')
         self.client.login(username='testing', password='Testing123')
 
+    # Test the ReservationForm works for valid information
     def test_ReservationForm_valid(self):
         form = ReservationForm(data={'TicketsReserved': '2', 'temp': '1'})
         self.assertTrue(form.is_valid())
 
+    # Test the ReservationForm works for invalid information
     def test_ReservationForm_invalid(self):
+        # User can't enter a non negative ticket number
         form = ReservationForm(data={'TicketsReserved': '0', 'temp': '1'})
         self.assertFalse(form.is_valid())
+
