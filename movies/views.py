@@ -118,6 +118,7 @@ def add_payment(request):
             # Clear the form and return to the home page
             form = PaymentForm(None)
             context = {'form': form}
+            messages.info(request, "Your payment has been successfully added!")
             return render(request, 'movies/index.html', context)
 
         else:
