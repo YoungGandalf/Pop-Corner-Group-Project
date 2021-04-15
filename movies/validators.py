@@ -81,7 +81,7 @@ def validate_security_code(value):
 
 def validate_expiration_date(value):
     # Regex to check for proper date format of mm/yy
-    regex = r"^^((0[1-9])|(1[0-2]))\/[2]\d$$"
+    regex = r"^((0[1-9])|(1[0-2]))\/[2]\d$"
 
     if re.search(regex, value):
         return value
