@@ -1,10 +1,10 @@
 from django.shortcuts import render, redirect
-from .forms import UserForm, EventForm
+from .forms import *
 from django.contrib.auth.models import User
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
-from .models import MyUser, Event
+from .models import *
 
 
 def index(request):
@@ -92,38 +92,41 @@ def logout_user(request):
     return redirect('/')
 
 
-def event_form(request):
-    # Initialize form with the data from the site or none
-    form = EventForm(request.POST or None)
-    if request.method == 'POST':
-        # If the form is valid
-        if form.is_valid():
-            # Owner user email for foreign key in Event object creation
-            # this gets the MyUser primary key and stores it in ownerID
-            username = request.user.get_username()
-            owner_ID = MyUser.objects.get(UserName=username)
+def add_payment(request):
+    # Initialize form on the page
+    form = PaymentForm(request.POST or None)
 
-            # Get data from form to store in event class object
-            eventObj = Event(
-                # EventId  Need to go and get the primary key from the event field
-                Owner_id=owner_ID.UserEmail,
-                EventAddress=form.cleaned_data.get('EventAddress'),
-                AvailableTickets=form.cleaned_data.get('AvailableTickets'),
-                TotalTickets=form.cleaned_data.get('TotalTickets'),
-                EventDate=form.cleaned_data.get('EventDate'),
-                EventWebsite=form.cleaned_data.get('EventWebsite'),
-                MovieId_id=1
-            )
-            eventObj.save()
-            form = EventForm(None)
+    # Check if user is logged in
+    if request.user.is_authenticated:
+
+        if form.is_valid():
+
+            # Grab current users email for foreign key in Payment object creation,
+            username = request.user.get_username()
+            currentUser = MyUser.objects.get(UserName=username)
+
+            # Create new payment object and save
+            payment = Payment(Owner_id=currentUser.UserEmail,
+                              CardNumber=form.cleaned_data.get('CardNumber'),
+                              ExpDate=form.cleaned_data.get('ExpDate'),
+                              SecCode=form.cleaned_data.get('SecCode'),
+                              Address=form.cleaned_data.get('Address'),
+                              ZipCode=form.cleaned_data.get('ZipCode'))
+
+            payment.save()
+
+            # Clear the form and return to the home page
+            form = PaymentForm(None)
             context = {'form': form}
-            messages.info(request, "Your event has been successfully added!")
+            messages.info(request, "Your payment has been successfully added!")
             return render(request, 'movies/index.html', context)
+
         else:
-            form = event_form(None)
+            # Reload page if form is not valid
             context = {'form': form}
-            return render(request, 'movies/event.html', context)
+            return render(request, 'movies/payment.html', context)
+
+    # User must be logged into their account to add a credit card
     else:
-        # Reload page if form is not valid
-        context = {'form': form}
-        return render(request, 'movies/event.html', context)
+        messages.info(request, "You must login to add payment information")
+        return redirect('/login')

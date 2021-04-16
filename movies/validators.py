@@ -59,9 +59,46 @@ def validate_phonenumber(value):
         return value
 
 
-def validate_event_tickets_available(value):
-    # check to see if enough tickets are available
-    if value < 1:
-        raise ValidationError("There are no tickets available")
-    else:
+def validate_zip_code(value):
+    # Regex to check for 5 digits in a row and no other data in the field
+    regex = r"^\d{5}$"
+
+    if re.search(regex, value):
         return value
+    else:
+        raise ValidationError("The zip code must be 5 digits 0-9")
+
+
+def validate_security_code(value):
+    # Regex to check for 3 digits in succession with nothing surrounding it
+    regex = r"^\d{3}$"
+
+    if re.search(regex, value):
+        return value
+    else:
+        raise ValidationError("The security code must be 3 digits 0-9")
+
+
+def validate_expiration_date(value):
+    # Regex to check for proper date format of mm/yy
+    regex = r"^((0[1-9])|(1[0-2]))\/[2]\d$"
+
+    if re.search(regex, value):
+        return value
+    else:
+        raise ValidationError("Please enter a valid expiration date in the mm/yy format")
+
+
+def validate_card_number(value):
+
+    NoSpaceRegex = r"^([0-9]){16}$"
+    DashRegex = r"^\d{4}-\d{4}-\d{4}-\d{4}$"
+    SpaceRegex = r"^\d{4}\s\d{4}\s\d{4}\s\d{4}$"
+
+    # Return formatted card number based on which format was given
+    if re.search(NoSpaceRegex, value) or re.search(DashRegex, value) or re.search(SpaceRegex, value):
+        return value
+
+    else:
+        raise ValidationError(
+            "Please enter a 16 digit credit card number using spaces, dashes, or nothing in between the numbers.")

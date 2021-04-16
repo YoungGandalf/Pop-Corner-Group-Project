@@ -1,9 +1,9 @@
 from django.contrib.auth.models import User
 from django.urls import reverse
 
-from .forms import forms, UserForm, EventForm
+from movies.forms import *
 from django.test import TestCase, Client
-from .models import MyUser, Event, Movie
+from movies.models import *
 
 
 # Create your tests here.
@@ -58,7 +58,6 @@ class LoginTestCase(TestCase):
         MyUser.objects.create(UserEmail="testing@gmail.com", UserPassword="Testing123", UserName="testing",
                               UserPhoneNumber="123-456-7890", IsBusiness=False)
         user = User.objects.create_user(username='testing', password='Testing123')
-        self.client = Client()
 
     # Testing for successful login
     def test_successful_login(self):
@@ -69,22 +68,39 @@ class LoginTestCase(TestCase):
         self.assertFalse(self.client.login(username='testing', password='wrong'))
 
 
-# Tests for Event Form
-class EventTestCases(TestCase):
-    def test_EventTestCases_valid(self):
-        MyUser.objects.create(UserEmail="ownertest1@gmail.com", UserPassword="Owner1", UserName="ownertest1",
-                              UserPhoneNumber="123-456-7899", IsBusiness=True)
-        Movie.objects.create(MovieName="TestMovie", MovieDuration="60")
-        form = EventForm(data={'Owner_id': "ownertest1@gmail.com", 'EventAddress': "123", 'AvailableTickets': "90",
-                               'TotalTickets': "100", 'EventDate': "2021-10-25", 'MovieId_id': "1",
-                               'EventWebsite': "www.johndoe.com"})
+class PaymentTestCase(TestCase):
+    def setUp(self):
+        testUser = MyUser(UserEmail="testing@gmail.com", UserPassword="Testing123", UserName="testing",
+               UserPhoneNumber="123-456-7890", IsBusiness=False)
+        testUser.save()
+        user = User.objects.create_user(username='testing', password='Testing123')
+        self.client.login(username='testing', password='Testing123')
+
+    def test_PaymentForm_valid(self):
+        form = PaymentForm(data={'CardNumber': '0123654789654123', 'ExpDate': '02/25', 'SecCode': '221',
+                                 'Address': '123 test drive', 'ZipCode': '21227'})
         self.assertTrue(form.is_valid())
 
-    def test_EventTestCases_invalid(self):
-        MyUser.objects.create(UserEmail="ownertest2@gmail.com", UserPassword="Owner2", UserName="ownertest2",
-                              UserPhoneNumber="123-456-7895", IsBusiness=True)
-        Movie.objects.create(MovieName="TestMovie", MovieDuration="60")
-        form = EventForm(data={'Owner_id': "ownertest1@gmail.com", 'EventAddress': "", 'AvailableTickets': "",
-                               'TotalTickets': "", 'EventDate': "", 'MovieId_id': "2",
-                               'EventWebsite': ""})
+    def test_PaymentForm_invalid(self):
+        form = PaymentForm(data={'CardNumber': '0123654789654123', 'ExpDate': '02/55', 'SecCode': '221',
+                                 'Address': '123 test drive', 'ZipCode': '21227'})
         self.assertFalse(form.is_valid())
+
+    def test_add_valid_payment(self):
+
+        self.client.login(username='testing', password='Testing123')
+
+        response = self.client.post('/payment/',
+                                    data={'CardNumber': '0123654789654123', 'ExpDate': '02/25', 'SecCode': '221',
+                                          'Address': '123 test drive', 'ZipCode': '21227'})
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_add_invalid_payment(self):
+        response = self.client.post(reverse('payment'),
+                                    data={'CardNumber': 'This is not a number', 'ExpDate': '02/25', 'SecCode': '221',
+                                          'Address': '123 test drive', 'ZipCode': '21227'})
+
+        self.assertEqual(response.status_code, 200)
+        self.failUnless(response.context['form'])
+        self.failUnless(response.context['form'].errors)

@@ -1,14 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-
-
 <head>
     <meta charset="UTF-8">
-    <!-- Specifies the name of the tab -->
-    <title>Welcome to PopCorner!</title>
+    <title>Add your payment information</title>
 </head>
 
-<!-- Formatting the Navbar -->
 <style>
 .menu {
     background-color: #fa6b58;
@@ -28,13 +24,9 @@
     color: #FA6B58;
 }
 </style>
-
-<!-- Formatting the webpage and "header" -->
 <body style="background-color:#333333;">
 <h3 style="color:#FDEE87;font-size:150%;font-family:'Optima';">Welcome to...</h3>
 <h1 style="color:tomato;font-size:300%;font-family:'Noto Sans Coptic';text-align:center;background: #FDEE87">PopCorner</h1>
-
-<!-- Prints out the Navbar-->
 <div class ="menu">
     <a class ="active" href="/#index">Home</a>
     <a href ="/account">Account</a>
@@ -48,19 +40,18 @@
     <a href = "/logout">Logout</a>
     <a href = "/payment">Payment</a>
 </div>
+<h1 style="color:tomato;font-size:150%;font-family:'Optima';">Payment Info</h1>
 
-<!-- Prints out the messages from login-->
-{% if messages %}
-        <ul class="messages">
-            {% for message in messages %}
-                <li  {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </li>
-            {% endfor %}
-        </ul>
+<form action="" method="POST">
+{% csrf_token %}
+    <! -- Print out errors before the textbox on the form -->
+{% if error %}
+{{ error }}
 {% endif %}
-
-<!-- Filler for now -->
-<p style="font-size:500%">Coming Soon: The Rest of this Page</p>
-
+    <! -- Print out each textbox in the form -->
+{{ form.as_p }}
+<input type="submit" name="submit" value="Add Payment"/>
+</form>
 
 </body>
 </html>
