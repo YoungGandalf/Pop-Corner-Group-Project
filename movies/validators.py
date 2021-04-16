@@ -39,7 +39,7 @@ def validate_password_digit(value):
 
 # Validates the password contains at least one uppercase character
 def validate_password_uppercase(value):
-    if not re.search(r"[A-Z]+", value): # searches for an uppercase character
+    if not re.search(r"[A-Z]+", value):  # searches for an uppercase character
         raise ValidationError("The password must contain at least one uppercase character")
     else:
         return value
@@ -55,5 +55,13 @@ def validate_phonenumber(value):
     if not re.search(regex, value) and not re.search(regex2, value) and not re.search(regex3, value):
         raise ValidationError(
             "The phone number must be in format (###)###-###, ###-###-###, ##########, or ########### ")
+    else:
+        return value
+
+
+def validate_event_tickets_available(value):
+    # check to see if enough tickets are available
+    if value < 1:
+        raise ValidationError("There are no tickets available")
     else:
         return value

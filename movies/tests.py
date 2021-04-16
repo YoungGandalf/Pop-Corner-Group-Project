@@ -1,9 +1,9 @@
 from django.contrib.auth.models import User
 from django.urls import reverse
 
-from movies.forms import forms, UserForm
+from .forms import forms, UserForm, EventForm
 from django.test import TestCase, Client
-from movies.models import MyUser
+from .models import MyUser, Event, Movie
 
 
 # Create your tests here.
@@ -69,4 +69,22 @@ class LoginTestCase(TestCase):
         self.assertFalse(self.client.login(username='testing', password='wrong'))
 
 
+# Tests for Event Form
+class EventTestCases(TestCase):
+    def test_EventTestCases_valid(self):
+        MyUser.objects.create(UserEmail="ownertest1@gmail.com", UserPassword="Owner1", UserName="ownertest1",
+                              UserPhoneNumber="123-456-7899", IsBusiness=True)
+        Movie.objects.create(MovieName="TestMovie", MovieDuration="60")
+        form = EventForm(data={'Owner_id': "ownertest1@gmail.com", 'EventAddress': "123", 'AvailableTickets': "90",
+                               'TotalTickets': "100", 'EventDate': "2021-10-25", 'MovieId_id': "1",
+                               'EventWebsite': "www.johndoe.com"})
+        self.assertTrue(form.is_valid())
 
+    def test_EventTestCases_invalid(self):
+        MyUser.objects.create(UserEmail="ownertest2@gmail.com", UserPassword="Owner2", UserName="ownertest2",
+                              UserPhoneNumber="123-456-7895", IsBusiness=True)
+        Movie.objects.create(MovieName="TestMovie", MovieDuration="60")
+        form = EventForm(data={'Owner_id': "ownertest1@gmail.com", 'EventAddress': "", 'AvailableTickets': "",
+                               'TotalTickets': "", 'EventDate': "", 'MovieId_id': "2",
+                               'EventWebsite': ""})
+        self.assertFalse(form.is_valid())
