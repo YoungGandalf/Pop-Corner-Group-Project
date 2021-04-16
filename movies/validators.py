@@ -39,7 +39,7 @@ def validate_password_digit(value):
 
 # Validates the password contains at least one uppercase character
 def validate_password_uppercase(value):
-    if not re.search(r"[A-Z]+", value): # searches for an uppercase character
+    if not re.search(r"[A-Z]+", value):  # searches for an uppercase character
         raise ValidationError("The password must contain at least one uppercase character")
     else:
         return value
@@ -55,5 +55,64 @@ def validate_phonenumber(value):
     if not re.search(regex, value) and not re.search(regex2, value) and not re.search(regex3, value):
         raise ValidationError(
             "The phone number must be in format (###)###-###, ###-###-###, ##########, or ########### ")
+    else:
+        return value
+
+
+def validate_zip_code(value):
+    # Regex to check for 5 digits in a row and no other data in the field
+    regex = r"^\d{5}$"
+
+    if re.search(regex, value):
+        return value
+    else:
+        raise ValidationError("The zip code must be 5 digits 0-9")
+
+
+def validate_security_code(value):
+    # Regex to check for 3 digits in succession with nothing surrounding it
+    regex = r"^\d{3}$"
+
+    if re.search(regex, value):
+        return value
+    else:
+        raise ValidationError("The security code must be 3 digits 0-9")
+
+
+def validate_expiration_date(value):
+    # Regex to check for proper date format of mm/yy
+    regex = r"^((0[1-9])|(1[0-2]))\/[2]\d$"
+
+    if re.search(regex, value):
+        return value
+    else:
+        raise ValidationError("Please enter a valid expiration date in the mm/yy format")
+
+
+def validate_card_number(value):
+    NoSpaceRegex = r"^([0-9]){16}$"
+    DashRegex = r"^\d{4}-\d{4}-\d{4}-\d{4}$"
+    SpaceRegex = r"^\d{4}\s\d{4}\s\d{4}\s\d{4}$"
+
+    # Return formatted card number based on which format was given
+    if re.search(NoSpaceRegex, value) or re.search(DashRegex, value) or re.search(SpaceRegex, value):
+        return value
+
+    else:
+        raise ValidationError(
+            "Please enter a 16 digit credit card number using spaces, dashes, or nothing in between the numbers.")
+
+
+# Validates the number of tickets the user reserved
+def validate_tickets_reserved(value):
+    if value <= 0:
+        raise ValidationError(
+            "The number of tickets you reserve must be an integer greater than 1")
+
+
+def validate_event_tickets_available(value):
+    # check to see if enough tickets are available
+    if value < 1:
+        raise ValidationError("There are no tickets available")
     else:
         return value

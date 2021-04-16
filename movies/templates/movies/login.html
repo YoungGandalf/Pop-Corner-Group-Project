@@ -3,73 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <title>Login to PopCorner</title>
+    {%  load static  %}
+    <link rel="stylesheet" href="{% static 'css/all.css' %}" type="text/css">
 </head>
-<!-- This sets up the navigation bar and needs to be moved to a header.html file-->
-<style>
-.menu {
-    background-color: #fa6b58;
-    overflow: hidden;
-}
-.menu a{
-    float: left;
-    background-color: #FA6B58;
-    color: #FDEE87;
-    text-align: center;
-    padding: 15px 70px;
-    text-decoration: none;
-    font-size: 17px;
-}
-.menu a:hover, a:active {
-    background-color: #FDEE87;
-    color: #FA6B58;
-}
-</style>
 
 <!-- Sorts out the formatting of the header -->
-<body style="background-color:#333333;">
-<h3 style="color:#FDEE87;font-size:150%;font-family:'Optima';">Welcome to...</h3>
-<h1 style="color:tomato;font-size:300%;font-family:'Noto Sans Coptic';text-align:center;background: #FDEE87">PopCorner</h1>
+<body>
+    <header role="banner" class="menu-nav">
+        <a href="/#index">Home</a>
+        <div class="sub-menu-nav">
+            <button class="sub-menu-btn">Account</button>
+            <div class="sub-menu-content">
+                <a href="/signup">Sign Up</a>
+                <a href="/login">Login</a>
+                <a href="/logout">Logout</a>
+            </div>
+        </div>
+        <a href ="/movies">Movies</a>
+        <a href ="/map">Locations</a>
+        <a href ="/reservation">Make Reservation</a>
+        <a href = "/payment">Payment</a>
+        <a href ="/about">About Us</a>
+    </header>
 
-<div class ="menu">
-    <a class ="active" href="/#index">Home</a>
-    <a href ="/account">Account</a>
-    <a href ="/movies">Movies</a>
-    <a href ="/locations">Locations</a>
-    <a href ="/about">About Us</a>
-   {%  if user.is_authenticated %}
-       <a href = "/logout">Logout</a>
-   {% else %}
-       <a href = "/login">Login</a>
-    {% endif %}
-</div>
+    <div class="page-content">
+        <h1 style="color:tomato;font-size:150%;font-family:'Optima';">Login</h1>
+        <!-- End of formatting -->
 
-<h1 style="color:tomato;font-size:150%;font-family:'Optima';">Login</h1>
-<!-- End of formatting -->
-<p>
-<!-- Creating the Login Form -->
- <form action="/login/" method="post">
-     {% csrf_token %}
-     <!-- Prints out messages -->
-     {% if messages %}
-        <ul class="messages">
-            {% for message in messages %}
-                <li  {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </li>
-            {% endfor %}
-        </ul>
-     {% endif %}
+        <!-- Creating the Login Form -->
+         <form action="/login/" method="post">
+             {% csrf_token %}
+             <!-- Prints out messages -->
+             {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                        <li  {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </li>
+                    {% endfor %}
+                </ul>
+             {% endif %}
 
-     <!-- Login Form Blanks -->
-     Enter your username: <br>
-     <input type="text" name="Username"><br>
-     Enter your password: <br>
-     <input type="password" name="Password"><br>
-     <input type="submit">
- </form>
-
-<br>
-<a href = "/signup" style="color:tomato">Create Account</a><br>
-<a href = "/password-reset" style="color:tomato">Forgot Password?</a></p>
-
+             <!-- Login Form Blanks -->
+             Enter your username: <br/>
+             <input type="text" name="Username"><br/>
+             Enter your password: <br/>
+             <input type="password" name="Password"><br/>
+             <input type="submit">
+         </form>
+        If you don't already have an account, <a href = "/signup"><strong>Sign Up</strong></a> instead.
+    </div>
 
 </body>
 </html>
