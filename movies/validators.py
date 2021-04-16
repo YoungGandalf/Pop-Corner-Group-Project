@@ -90,7 +90,6 @@ def validate_expiration_date(value):
 
 
 def validate_card_number(value):
-
     NoSpaceRegex = r"^([0-9]){16}$"
     DashRegex = r"^\d{4}-\d{4}-\d{4}-\d{4}$"
     SpaceRegex = r"^\d{4}\s\d{4}\s\d{4}\s\d{4}$"
@@ -109,3 +108,11 @@ def validate_tickets_reserved(value):
     if value <= 0:
         raise ValidationError(
             "The number of tickets you reserve must be an integer greater than 1")
+
+
+def validate_event_tickets_available(value):
+    # check to see if enough tickets are available
+    if value < 1:
+        raise ValidationError("There are no tickets available")
+    else:
+        return value
