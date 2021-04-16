@@ -1,5 +1,7 @@
 from django.contrib.auth.models import User
 from django.urls import reverse
+from django.contrib.auth.tokens import default_token_generator
+import base64
 
 from .forms import *
 from django.test import TestCase, Client
@@ -155,3 +157,28 @@ class EventTestCases(TestCase):
                                'TotalTickets': "", 'EventDate': "", 'MovieId_id': "2",
                                'EventWebsite': ""})
         self.assertFalse(form.is_valid())
+
+
+# Tests for Password Reset
+class PasswordResetCase(TestCase):
+    def setUp(self):
+        MyUser.objects.create(UserEmail="testing@gmail.com", UserPassword="Testing123", UserName="testing",
+                              UserPhoneNumber="123-456-7890", IsBusiness=False)
+
+    # Actual Reset Password
+    def test_reset_password(self):
+        # checks if the initial password reset form works
+        response = self.client.get(reverse('password_reset'))
+        self.assertEqual(response.status_code, 200)
+        user = User.objects.create_user(username='testing', password='Testing123')
+        token = default_token_generator.make_token(user)
+
+        # checks if the password is properly reset
+        # THIS TEST DOES NOT WORK RIGHT NOW BECAUSE I'M NOT SURE HOW TO ENCODE THE UIDB64, BUT THE TOKEN IS CORRECT
+        response = self.client.get(reverse('/password-reset-confirm/' + str(base64.b64encode(bytes(user.id))) +
+                                        '/' + str(token)), {'new_password1:Lemons123', 'new_password2:Lemons123'})
+        self.assertEqual(response.status_code, 302)
+
+        # once the password is change, checks if the login is correct
+        # BECAUSE THE ABOVE STATEMENT DOES NOT WORK, THIS STATEMENT IS FALSE
+        # self.assertTrue(self.client.login(username='testing', password='Lemons123'))
