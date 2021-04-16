@@ -36,16 +36,16 @@
     <a href ="/movies">Movies</a>
     <a href ="/locations">Locations</a>
     <a href ="/about">About Us</a>
-    <!--FIX THE FORMAT/ACCESS OF THIS LATER!!
-        THIS IS JUST FOR EASE OF ACCESS FOR TESTING PURPOSES-->
-    <a href = "/signup">Sign Up </a>
-    <a href = "/login">Login</a>
-    <a href = "/logout">Logout</a>
+   {%  if user.is_authenticated %}
+       <a href = "/logout">Logout</a>
+   {% else %}
+       <a href = "/login">Login</a>
+    {% endif %}
 </div>
 
 <h1 style="color:tomato;font-size:150%;font-family:'Optima';">Login</h1>
 <!-- End of formatting -->
-
+<p>
 <!-- Creating the Login Form -->
  <form action="/login/" method="post">
      {% csrf_token %}
@@ -59,13 +59,16 @@
      {% endif %}
 
      <!-- Login Form Blanks -->
-     Enter your username: <br/>
-     <input type="text" name="Username"><br/>
-     Enter your password: <br/>
-     <input type="password" name="Password"><br/>
+     Enter your username: <br>
+     <input type="text" name="Username"><br>
+     Enter your password: <br>
+     <input type="password" name="Password"><br>
      <input type="submit">
  </form>
-If you don't already have an account, <a href = "/signup"><strong>Sign Up</strong></a> instead.
+
+<br>
+<a href = "/signup" style="color:tomato">Create Account</a><br>
+<a href = "/password-reset" style="color:tomato">Forgot Password?</a></p>
 
 
 </body>
