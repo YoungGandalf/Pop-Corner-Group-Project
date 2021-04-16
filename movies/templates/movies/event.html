@@ -1,0 +1,29 @@
+<div class ="menu">
+    <a class ="active" href="/#index">Home</a>
+    <a href ="/account">Account</a>
+    <a href ="/movies">Movies</a>
+    <a href ="/locations">Locations</a>
+    <a href ="/about">About Us</a>
+    {%  if user.is_authenticated %}
+    <a href = "/logout">Logout</a>
+    {% else %}
+    <a href = "/login">Login</a>
+    <a href = "/event">Event</a>
+    {% endif %}
+</div>
+
+<h1 style="color:tomato;font-size:150%;font-family:'Optima';">Event Form</h1>
+<!-- End of formatting -->
+<form action="" method="POST">
+{% csrf_token %}
+    <! -- Print out errors before the textbox on the form -->
+{% if error %}
+{{ error }}
+{% endif %}
+    <! -- Print out each textbox in the form -->
+{{ form.as_p }}
+<input type="submit" name="submit" value="EventForm"/>
+</form>
+
+</body>
+</html>

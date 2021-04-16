@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Add your reservation information</title>
+    {%  load static  %}
+    <link rel="stylesheet" href="{% static 'css/all.css' %}" type="text/css">
+</head>
+
+<body>
+    <header role="banner" class="menu-nav">
+        <a href="/#index">Home</a>
+        <div class="sub-menu-nav">
+            <button class="sub-menu-btn">Account</button>
+            <div class="sub-menu-content">
+                <a href="/signup">Sign Up</a>
+                <a href="/login">Login</a>
+                <a href="/logout">Logout</a>
+            </div>
+        </div>
+        <a href ="/movies">Movies</a>
+        <a href ="/map">Locations</a>
+        <a href ="/reservation">Make Reservation</a>
+        <a href = "/payment">Payment</a>
+        <a href ="/about">About Us</a>
+    </header>
+
+    <h1 style="color:tomato;font-size:150%;font-family:'Optima';">Reservation Info</h1>
+
+    <div class="page-content">
+    <p>
+        Here are possible movies to watch with the associating dates and times:
+        <ol>
+
+            {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                        <li  {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            {% if error %}
+                {{ error }}
+            {% endif %}
+
+            {% for Event in Events %}
+                {% if Event.AvailableTickets > 0 %}
+                     <!-- Print out Relevant Information for the Movie-->
+                    <li>Movie Name: {{ Event.MovieId.MovieName }}  <br>
+                        Event Address: {{ Event.EventAddress }} <br>
+                        Event Date:{{ Event.EventDate }} </li>
+                        Number of Tickets Available: {{ Event.AvailableTickets }}
+                        <form action="/add/" method="POST">
+                            {% csrf_token %}
+                            <!-- Ask User for the number of tickets -->
+                            How many tickets would you like to buy?
+                            <input type="integer", name="tickets"><br/>
+                            <!-- Store the current Event ID -->
+                            <input type="hidden" value={{ Event.EventId }} name=tempId readonly>
+                            <!-- FIX: Submit Button should only show up once -->
+                            <input type="submit" name="submit" value="Add Reservation"/>
+                        </form>
+                {% endif %}
+            {% endfor %}
+        </ol>
+    </p>
+    </div>
+
+</body>
+
+</html>
