@@ -1,66 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
 
-
 <head>
     <meta charset="UTF-8">
     <!-- Specifies the name of the tab -->
     <title>Welcome to PopCorner!</title>
+    {%  load static  %}
+    <link rel="stylesheet" href="{% static 'css/all.css' %}" type="text/css">
 </head>
 
-<!-- Formatting the Navbar -->
-<style>
-.menu {
-    background-color: #fa6b58;
-    overflow: hidden;
-}
-.menu a{
-    float: left;
-    background-color: #FA6B58;
-    color: #FDEE87;
-    text-align: center;
-    padding: 15px 70px;
-    text-decoration: none;
-    font-size: 17px;
-}
-.menu a:hover, a:active {
-    background-color: #FDEE87;
-    color: #FA6B58;
-}
-</style>
+<body>
+    <header role="banner" class="menu-nav">
+        <a href="/#index">Home</a>
+        <div class="sub-menu-nav">
+            <button class="sub-menu-btn">Account</button>
+            <div class="sub-menu-content">
+                <a href="/signup">Sign Up</a>
+                <a href="/login">Login</a>
+                <a href="/logout">Logout</a>
+            </div>
+        </div>
+        <a href ="/movies">Movies</a>
+        <a href ="/map">Locations</a>
+        <a href ="/reservation">Make Reservation</a>
+        <a href = "/payment">Payment</a>
+        <a href ="/about">About Us</a>
+    </header>
 
-<!-- Formatting the webpage and "header" -->
-<body style="background-color:#333333;">
-<h3 style="color:#FDEE87;font-size:150%;font-family:'Optima';">Welcome to...</h3>
-<h1 style="color:tomato;font-size:300%;font-family:'Noto Sans Coptic';text-align:center;background: #FDEE87">PopCorner</h1>
+    <div class="page-content">
+        <!-- Prints out the messages from login-->
+        {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                        <li  {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </li>
+                    {% endfor %}
+                </ul>
+        {% endif %}
 
-<!-- Prints out the Navbar-->
-<div class ="menu">
-    <a class ="active" href="/#index">Home</a>
-    <a href ="/account">Account</a>
-    <a href ="/movies">Movies</a>
-    <a href ="/locations">Locations</a>
-    <a href ="/about">About Us</a>
-    <!--FIX THE FORMAT/ACCESS OF THIS LATER!!
-        THIS IS JUST FOR EASE OF ACCESS FOR TESTING PURPOSES-->
-    <a href = "/signup">Sign Up </a>
-    <a href = "/login">Login</a>
-    <a href = "/logout">Logout</a>
-    <a href = "/payment">Payment</a>
-</div>
-
-<!-- Prints out the messages from login-->
-{% if messages %}
-        <ul class="messages">
-            {% for message in messages %}
-                <li  {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </li>
-            {% endfor %}
-        </ul>
-{% endif %}
-
-<!-- Filler for now -->
-<p style="font-size:500%">Coming Soon: The Rest of this Page</p>
-
+        <p style="font-size:300%;color:red;float:right;padding-top:15%;padding-right:20%;">Welcome to PopCorner!</p>
+        <img src="{% static 'images/popcorn_cartoon.png' %}" alt="My Logo" style="height:40%">
+    </div>
 
 </body>
+
 </html>
