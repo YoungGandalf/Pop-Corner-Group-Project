@@ -22,6 +22,15 @@
         <a href ="/movies">Movies</a>
         <a href ="/map">Locations</a>
         <a href ="/reservation">Make Reservation</a>
+        <!-- Tab does not align properly
+        <div class="sub-menu-nav">
+        <button class="sub-menu-btn">Reservation</button>
+            <div class="sub-menu-content">
+                <a href="/reservation">Make Reservation</a>
+                <a href="/edit_reservation">Edit Reservation</a>
+            </div>
+        </div>
+        -->
         <a href = "/payment">Payment</a>
         <a href ="/about">About Us</a>
     </header>
@@ -52,7 +61,7 @@
                     <li>Movie Name: {{ Event.MovieId.MovieName }}  <br>
                         Event Address: {{ Event.EventAddress }} <br>
                         Event Date:{{ Event.EventDate }} </li>
-                        Number of Tickets Available: {{ Event.AvailableTickets }}
+                        Number of Tickets Available: {{ Event.AvailableTickets }}<br>
 
                             {% csrf_token %}
                             <!-- Both inputs need to be a list (specified by id) -->
@@ -61,7 +70,7 @@
                             <input type="integer" name="tickets" id="tickets.id" value = 0><br/>
                             <!-- Store the current Event ID -->
                             <input type="hidden" value={{ Event.EventId }} name=tempId id="temp.id" readonly>
-                            <!-- FIX: Submit Button should only show up once -->
+                            <br>
 
                 {% endif %}
             {% endfor %}

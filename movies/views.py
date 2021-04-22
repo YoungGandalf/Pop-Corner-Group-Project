@@ -1,4 +1,7 @@
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
+from django.urls import reverse
+
 from .forms import *
 from django.contrib.auth.models import User
 from django.contrib.auth import login, authenticate, logout
@@ -143,18 +146,23 @@ def reservation(request):
 
 # Add reservation to the database
 def add(request):
-
     # Get the list of tickets the user put in
     numTickets = request.POST.getlist('tickets')
     # Get list of IDs for each ticket
     eventID = request.POST.getlist('tempId')
 
+    # Boolean to check if the entire array(tickets) is full of 0s
+    isZeros = False
+    # Count number of 0s in the array
+    count0 = 0
     # Iterate through the numTickets array
     for r in range(len(numTickets)):
-        # Remove all the indexes with 0 and associating eventID from the list
-        if numTickets[r] == 0:
-            numTickets.remove(r)
-            eventID.remove(r)
+        # Keep a counter for the number of 0s that exist
+        if int(numTickets[r]) == 0:
+            count0 = count0 + 1
+    # If the entire array is full of 0s then set the boolean to true
+    if count0 == len(numTickets):
+        isZeros = True
 
     # Iterate through the numTickets array
     for i in numTickets:
@@ -206,17 +214,24 @@ def add(request):
                 # Save the updated information for Event in the database
                 currentEvent.save()
 
-                # Create new reservation object and save it with the appropriate information
-                reservation = Reservation(Owner_id=currentUser.UserEmail,
-                                          EventId_id=currentEvent.EventId,
-                                          TicketsReserved=int(numTickets[counter]))
+                # If the reservation already exists then just add to the reservation (filter by event id and owner)
+                if Reservation.objects.filter(EventId_id=currentEvent.EventId).filter(Owner=currentUser).exists():
+                    reservation = Reservation.objects.get(EventId_id=currentEvent.EventId, Owner=currentUser)
+                    reservation.TicketsReserved = reservation.TicketsReserved + int(numTickets[counter])
+                else:
+                    # Create new reservation object and save it with the appropriate information
+                    reservation = Reservation(Owner_id=currentUser.UserEmail,
+                                              EventId_id=currentEvent.EventId,
+                                              TicketsReserved=int(numTickets[counter]))
 
-                # Save the updated reservation in the database
-                reservation.save()
-                counter = counter + 1 # Iterate counter
+                # If the current number of ticket is not equal to 0 then save the reservation
+                if int(numTickets[counter]) != 0:
+                    # Save the updated reservation in the database
+                    reservation.save()
+                counter = counter + 1  # Iterate counter
 
-            # If for some reason there are no entries then just reprompt to the reservation page
-            if int(numTickets[0]) == 0:
+            # If for some reason there are no entries (full of 0s) then just reprompt to the reservation page
+            if isZeros:
                 # Reload page if form is not valid
                 Events = Event.objects.filter()
                 context = {
@@ -278,3 +293,17 @@ def event_form(request):
         # Reload page if form is not valid
         context = {'form': form}
         return render(request, 'movies/event.html', context)
+
+
+# Used for the for loop in order to print out reservation information
+def edit_reservation(request):
+    Reservations = Reservation.objects.filter()
+    context = {
+        'Reservations': Reservations,
+    }
+    return render(request, 'movies/edit_reservation.html', context=context)
+
+
+# Should take care of deleting reservation
+def delete_reservation(request):
+    return HttpResponseRedirect(reverse('edit_reservation'))
