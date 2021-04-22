@@ -44,6 +44,8 @@
                 {{ error }}
             {% endif %}
 
+        <form action="/add/" method="POST">
+
             {% for Event in Events %}
                 {% if Event.AvailableTickets > 0 %}
                      <!-- Print out Relevant Information for the Movie-->
@@ -51,18 +53,20 @@
                         Event Address: {{ Event.EventAddress }} <br>
                         Event Date:{{ Event.EventDate }} </li>
                         Number of Tickets Available: {{ Event.AvailableTickets }}
-                        <form action="/add/" method="POST">
+
                             {% csrf_token %}
-                            <!-- Ask User for the number of tickets -->
+                            <!-- Both inputs need to be a list (specified by id) -->
+                            <!-- Ask User for the number of tickets (default is 0)-->
                             How many tickets would you like to buy?
-                            <input type="integer", name="tickets"><br/>
+                            <input type="integer" name="tickets" id="tickets.id" value = 0><br/>
                             <!-- Store the current Event ID -->
-                            <input type="hidden" value={{ Event.EventId }} name=tempId readonly>
+                            <input type="hidden" value={{ Event.EventId }} name=tempId id="temp.id" readonly>
                             <!-- FIX: Submit Button should only show up once -->
-                            <input type="submit" name="submit" value="Add Reservation"/>
-                        </form>
+
                 {% endif %}
             {% endfor %}
+        <input type="submit" name="submit" value="Add Reservation"/>
+        </form>
         </ol>
     </p>
     </div>
@@ -70,3 +74,4 @@
 </body>
 
 </html>
+

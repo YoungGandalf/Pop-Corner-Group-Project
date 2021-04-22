@@ -144,24 +144,33 @@ def reservation(request):
 # Add reservation to the database
 def add(request):
 
-    # Get number of tickets the user put in
-    numTickets = request.POST['tickets']
+    # Get the list of tickets the user put in
+    numTickets = request.POST.getlist('tickets')
+    # Get list of IDs for each ticket
+    eventID = request.POST.getlist('tempId')
 
-    # Validate the number of tickets the user placed
-    if int(numTickets) <= 0:
-        # If it failed then reprompt the user for another input
-        messages.error(request, "The number of tickets you reserve must be an integer greater than 1")
-        Events = Event.objects.filter()
-        context = {
-            'Events': Events,
-        }
-        return render(request, 'movies/reservation.html', context)
+    # Iterate through the numTickets array
+    for r in range(len(numTickets)):
+        # Remove all the indexes with 0 and associating eventID from the list
+        if numTickets[r] == 0:
+            numTickets.remove(r)
+            eventID.remove(r)
 
-    # Get current Event ID
-    eventID = request.POST['tempId']
+    # Iterate through the numTickets array
+    for i in numTickets:
+
+        # Validate the number of tickets the user placed
+        if int(i) < 0:
+            # If it failed then reprompt the user for another input
+            messages.error(request, "The number of tickets you reserve must be a positive integer")
+            Events = Event.objects.filter()
+            context = {
+                'Events': Events,
+            }
+            return render(request, 'movies/reservation.html', context)
 
     # Place information into the form and authenticate
-    form = ReservationForm(data={'TicketsReserved': numTickets, 'temp': eventID})
+    form = ReservationForm(data={'TicketsReserved': 0, 'temp': 0})
 
     # Check if user is logged in
     if request.user.is_authenticated:
@@ -172,34 +181,54 @@ def add(request):
             # Grab current users email for foreign key in Reservation object creation,
             username = request.user.get_username()
             currentUser = MyUser.objects.get(UserName=username)
-            # Get Event associated with the tempID
-            currentEvent = Event.objects.get(EventId=form.cleaned_data.get('temp'))
 
-            # Need to update the Event with the current number of tickets available
-            currentEvent.AvailableTickets = currentEvent.AvailableTickets - form.cleaned_data.get('TicketsReserved')
-            # Make sure the ticket number entered was valid
-            if currentEvent.AvailableTickets < 0:
-                # If it failed then reprompt the user for another input
-                messages.error(request, "The number of tickets you reserved must be less than this input")
+            # Set counter to keep track of indexes
+            counter = 0
+            # Iterate through the eventID array
+            for e in eventID:
+
+                # Get Event associated with the tempID
+                currentEvent = Event.objects.get(EventId=e)
+
+                # Need to update the Event with the current number of tickets available
+                currentEvent.AvailableTickets = currentEvent.AvailableTickets - int(numTickets[counter])
+
+                # Make sure the ticket number entered was valid
+                if currentEvent.AvailableTickets < 0:
+                    # If it failed then reprompt the user for another input
+                    messages.error(request, "The number of tickets you reserved must be less than this input")
+                    Events = Event.objects.filter()
+                    context = {
+                        'Events': Events,
+                    }
+                    return render(request, 'movies/reservation.html', context)
+
+                # Save the updated information for Event in the database
+                currentEvent.save()
+
+                # Create new reservation object and save it with the appropriate information
+                reservation = Reservation(Owner_id=currentUser.UserEmail,
+                                          EventId_id=currentEvent.EventId,
+                                          TicketsReserved=int(numTickets[counter]))
+
+                # Save the updated reservation in the database
+                reservation.save()
+                counter = counter + 1 # Iterate counter
+
+            # If for some reason there are no entries then just reprompt to the reservation page
+            if int(numTickets[0]) == 0:
+                # Reload page if form is not valid
                 Events = Event.objects.filter()
                 context = {
                     'Events': Events,
                 }
                 return render(request, 'movies/reservation.html', context)
-            # Save the updated information in the database
-            currentEvent.save()
+            else:
+                # Clear the form and go to the payment page to proceed
+                form = ReservationForm(None)
+                return redirect('/payment')
 
-            # Create new reservation object and save it with the appropriate information
-            reservation = Reservation(Owner_id=currentUser.UserEmail,
-                                      EventId_id=currentEvent.EventId,
-                                      TicketsReserved=form.cleaned_data.get('TicketsReserved'))
-            # Save the updated reservation in the database
-            reservation.save()
-
-            # Clear the form and go to the payment page to proceed
-            form = ReservationForm(None)
-            return redirect('/payment')
-
+        # Else statement for invalid forms
         else:
             # Reload page if form is not valid
             Events = Event.objects.filter()
@@ -212,6 +241,43 @@ def add(request):
     else:
         messages.info(request, "You must login to create a purchase")
         return redirect('/login')
+
+
+def event_form(request):
+    # Initialize form with the data from the site or none
+    form = EventForm(request.POST or None)
+    if request.method == 'POST':
+        # If the form is valid
+        if form.is_valid():
+            # Owner user email for foreign key in Event object creation
+            # this gets the MyUser primary key and stores it in ownerID
+            username = request.user.get_username()
+            owner_ID = MyUser.objects.get(UserName=username)
+
+            # Get data from form to store in event class object
+            eventObj = Event(
+                # EventId  Need to go and get the primary key from the event field
+                Owner_id=owner_ID.UserEmail,
+                EventAddress=form.cleaned_data.get('EventAddress'),
+                AvailableTickets=form.cleaned_data.get('AvailableTickets'),
+                TotalTickets=form.cleaned_data.get('TotalTickets'),
+                EventDate=form.cleaned_data.get('EventDate'),
+                EventWebsite=form.cleaned_data.get('EventWebsite'),
+                MovieId_id=1
+            )
+            eventObj.save()
+            form = EventForm(None)
+            context = {'form': form}
+            messages.info(request, "Your event has been successfully added!")
+            return render(request, 'movies/index.html', context)
+        else:
+            form = event_form(None)
+            context = {'form': form}
+            return render(request, 'movies/event.html', context)
+    else:
+        # Reload page if form is not valid
+        context = {'form': form}
+        return render(request, 'movies/event.html', context)
 
 
 def event_form(request):

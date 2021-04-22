@@ -105,9 +105,9 @@ def validate_card_number(value):
 
 # Validates the number of tickets the user reserved
 def validate_tickets_reserved(value):
-    if value <= 0:
+    if value < 0:
         raise ValidationError(
-            "The number of tickets you reserve must be an integer greater than 1")
+            "The number of tickets you reserve must be a positive integer")
 
 
 def validate_event_tickets_available(value):
