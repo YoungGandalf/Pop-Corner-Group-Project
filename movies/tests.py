@@ -134,9 +134,22 @@ class ReservationTestCase(TestCase):
     # Test the ReservationForm works for invalid information
     def test_ReservationForm_invalid(self):
         # User can't enter a non negative ticket number
-        form = ReservationForm(data={'TicketsReserved': '0', 'temp': '1'})
+        form = ReservationForm(data={'TicketsReserved': '-1', 'temp': '1'})
         self.assertFalse(form.is_valid())
 
+    # Testing User View with Valid Data (Should refresh back to the same page with a cleared form)
+    def test_add_valid_reservation_view(self):
+        # Valid Data
+        response = self.client.post(reverse('reservation'),
+                                    data={'tickets': '2', 'tempID': '1'})
+        self.assertEqual(response.status_code, 200)
+
+    # Testing User View with Invalid Data (Should refresh back to the same page)
+    def test_add_invalid_reservation_view(self):
+        # Invalid data fails.
+        response = self.client.post(reverse('reservation'),
+                                    data={'tickets': '-15', 'tempID': '1'})
+        self.assertEqual(response.status_code, 200)
 
 # Tests for Event Form
 class EventTestCases(TestCase):
@@ -144,9 +157,10 @@ class EventTestCases(TestCase):
         MyUser.objects.create(UserEmail="ownertest1@gmail.com", UserPassword="Owner1", UserName="ownertest1",
                               UserPhoneNumber="123-456-7899", IsBusiness=True)
         Movie.objects.create(MovieName="TestMovie", MovieDuration="60")
-        form = EventForm(data={'Owner_id': "ownertest1@gmail.com", 'EventAddress': "123", 'AvailableTickets': "90",
-                               'TotalTickets': "100", 'EventDate': "2021-10-25", 'MovieId_id': "1",
+        form = EventForm(data={'EventAddress': "123", 'AvailableTickets': '90',
+                               'TotalTickets': '100', 'EventDate': "2021-10-25",
                                'EventWebsite': "www.johndoe.com"})
+
         self.assertTrue(form.is_valid())
 
     def test_EventTestCases_invalid(self):
