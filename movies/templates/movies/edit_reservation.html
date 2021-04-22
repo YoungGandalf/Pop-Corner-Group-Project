@@ -37,7 +37,9 @@
                     <li>Movie: {{ Reservation.EventId.MovieId.MovieName }} <br>
                         Date/Time: {{ Reservation.EventId.EventDate }} <br>
                         Address: {{ Reservation.EventId.EventAddress }} <br>
-                        Number of Tickets Reserved: {{ Reservation.TicketsReserved }} </li> <br>
+                        Number of Tickets Reserved: {{ Reservation.TicketsReserved }} <br>
+                        Would you like to delete this reservation?
+                        <input type="checkbox" name="remove"></li><br/>
                 {% endif %}
             {% endfor %}
         </ol>
