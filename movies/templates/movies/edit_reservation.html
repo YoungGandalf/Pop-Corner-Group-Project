@@ -1,0 +1,49 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Reservations for PopCorner</title>
+    {%  load static  %}
+    <link rel="stylesheet" href="{% static 'css/all.css' %}" type="text/css">
+</head>
+
+<body>
+    <header role="banner" class="menu-nav">
+        <a href="/#index">Home</a>
+        <div class="sub-menu-nav">
+            <button class="sub-menu-btn">Account</button>
+            <div class="sub-menu-content">
+                <a href="/signup">Sign Up</a>
+                <a href="/login">Login</a>
+                <a href="/logout">Logout</a>
+            </div>
+        </div>
+        <a href ="/movies">Movies</a>
+        <a href ="/map">Locations</a>
+        <a href ="/reservation">Make Reservation</a>
+        <a href = "/payment">Payment</a>
+        <a href ="/about">About Us</a>
+    </header>
+
+    <div class="page-content">
+        <h1 style="color:tomato;font-size:150%;font-family:'Optima';">View/Edit Reservation</h1>
+
+    <p>
+        Here are your reservations so far:
+        <ol>
+            {% for Reservation in Reservations %}
+                <!-- Only print out information related to the current user-->
+                {% if user.username == Reservation.Owner.UserName %}
+                    <!-- Print out Relevant Information for the Reservation-->
+                    <li>Movie: {{ Reservation.EventId.MovieId.MovieName }} <br>
+                        Date/Time: {{ Reservation.EventId.EventDate }} <br>
+                        Address: {{ Reservation.EventId.EventAddress }} <br>
+                        Number of Tickets Reserved: {{ Reservation.TicketsReserved }} </li> <br>
+                {% endif %}
+            {% endfor %}
+        </ol>
+    </p>
+    If you would like to create a reservation, <a href = "/reservation"><strong>Reservation</strong></a>.
+    </div>
+
+</body>
+

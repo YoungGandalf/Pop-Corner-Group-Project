@@ -1,0 +1,77 @@
+body {
+    margin: 5px;
+    padding: 0;
+    background: #f9f9f9;
+}
+
+/* navigation bar */
+.menu-nav {
+    overflow: hidden;
+    background-color: darkorange;
+    padding: 0;
+    margin: 0;
+}
+
+/* navigation links */
+.menu-nav a {
+    float: left;
+    font-size: 1.4em;
+    font-family: 'Open Sans Condensed', "sans-serif";
+    color: lightyellow;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+/* sub-navigation bar */
+.sub-menu-nav {
+  float: left;
+  overflow: hidden;
+}
+
+/* sub-navigation button */
+.sub-menu-nav .sub-menu-btn {
+    font-size: 1.4em;
+    font-family: 'Open Sans Condensed', "sans-serif";
+    color: lightyellow;
+    border: none;
+    outline: none;
+    padding: 14px 16px;
+    background-color: inherit;
+    margin: 0;
+}
+
+/* change background and color of text on hover */
+.menu-nav a:hover, .sub-menu-nav:hover .sub-menu-content a:hover .sub-menu-btn{
+    background-color: lightsalmon;
+    color: orangered;
+}
+
+/* sub-navigation content bar */
+.sub-menu-content {
+  display: none;
+  position: absolute;
+  left: 5px;
+  background-color: orange;
+  width: 17%;
+  z-index: 1;
+}
+
+/* sub-navigation links */
+.sub-menu-content a {
+    float: left;
+    color: lightyellow;
+    text-decoration: none;
+    font-size: 1.2em;
+}
+
+/* open the sub-navigation bar when hovering over button */
+.sub-menu-nav:hover .sub-menu-content {
+    display: block;
+}
+
+.page-content {
+    margin: 5px;
+    padding-top: 30px;
+}
+
