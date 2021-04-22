@@ -1,29 +1,44 @@
-<div class ="menu">
-    <a class ="active" href="/#index">Home</a>
-    <a href ="/account">Account</a>
-    <a href ="/movies">Movies</a>
-    <a href ="/locations">Locations</a>
-    <a href ="/about">About Us</a>
-    {%  if user.is_authenticated %}
-    <a href = "/logout">Logout</a>
-    {% else %}
-    <a href = "/login">Login</a>
-    <a href = "/event">Event</a>
-    {% endif %}
-</div>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Event</title>
+    {%  load static  %}
+    <link rel="stylesheet" href="{% static 'css/all.css' %}" type="text/css">
+</head>
 
-<h1 style="color:tomato;font-size:150%;font-family:'Optima';">Event Form</h1>
-<!-- End of formatting -->
-<form action="" method="POST">
-{% csrf_token %}
-    <! -- Print out errors before the textbox on the form -->
-{% if error %}
-{{ error }}
-{% endif %}
-    <! -- Print out each textbox in the form -->
-{{ form.as_p }}
-<input type="submit" name="submit" value="EventForm"/>
-</form>
+<body>
+    <header role="banner" class="menu-nav">
+        <a href="/#index">Home</a>
+        <div class="sub-menu-nav">
+            <button class="sub-menu-btn">Account</button>
+            <div class="sub-menu-content">
+                <a href="/signup">Sign Up</a>
+                <a href="/login">Login</a>
+                <a href="/logout">Logout</a>
+            </div>
+        </div>
+        <a href ="/movies">Movies</a>
+        <a href ="/map">Locations</a>
+        <a href ="/reservation">Make Reservation</a>
+        <a href = "/payment">Payment</a>
+        <a href ="/about">About Us</a>
+    </header>
+
+    <div class="page-content">
+        <h1 style="color:tomato;font-size:150%;font-family:'Optima';">Create Event</h1>
+
+        <form action="" method="POST">
+        {% csrf_token %}
+            <! -- Print out errors before the textbox on the form -->
+        {% if error %}
+        {{ error }}
+        {% endif %}
+            <! -- Print out each textbox in the form -->
+        {{ form.as_p }}
+        <input type="submit" name="submit" value="Submit"/>
+        </form>
+    </div>
 
 </body>
+
 </html>

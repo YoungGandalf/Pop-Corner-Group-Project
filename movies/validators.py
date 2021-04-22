@@ -108,11 +108,3 @@ def validate_tickets_reserved(value):
     if value < 0:
         raise ValidationError(
             "The number of tickets you reserve must be a positive integer")
-
-
-def validate_event_tickets_available(value):
-    # check to see if enough tickets are available
-    if value < 1:
-        raise ValidationError("There are no tickets available")
-    else:
-        return value
