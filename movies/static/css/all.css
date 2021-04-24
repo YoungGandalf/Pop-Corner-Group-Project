@@ -17,7 +17,7 @@ body {
     float: left;
     font-size: 1.4em;
     font-family: 'Open Sans Condensed', "sans-serif";
-    color: lightyellow;
+    color: #FDEE87;
     text-align: center;
     padding: 14px 16px;
     text-decoration: none;
@@ -33,7 +33,7 @@ body {
 .sub-menu-nav .sub-menu-btn {
     font-size: 1.4em;
     font-family: 'Open Sans Condensed', "sans-serif";
-    color: lightyellow;
+    color: #FDEE87;
     border: none;
     outline: none;
     padding: 14px 16px;
@@ -60,7 +60,7 @@ body {
 /* sub-navigation links */
 .sub-menu-content a {
     float: left;
-    color: lightyellow;
+    color: #FDEE87;
     text-decoration: none;
     font-size: 1.2em;
 }
@@ -68,6 +68,24 @@ body {
 /* open the sub-navigation bar when hovering over button */
 .sub-menu-nav:hover .sub-menu-content {
     display: block;
+}
+
+/* login button */
+.menu-nav .login-button{
+    float: right;
+    padding: 6px;
+    margin-top: 8px;
+    margin-right: 16px;
+    cursor: pointer;
+    background-color: #FDEE87;
+    border: none;
+    color: tomato;
+    text-align: center;
+    text-decoration: none;
+    display: inline-flex;
+    font-family: 'Open Sans Condensed', "sans-serif";
+    font-size: 1.4em;
+
 }
 
 .page-content {
