@@ -137,51 +137,59 @@ def add_payment(request):
 
 # Used for the for loop in order to print out event information
 def reservation(request):
-    Events = Event.objects.filter()
-    context = {
-        'Events': Events,
-    }
-    return render(request, 'movies/reservation.html', context=context)
+    # Check if user is logged in
+    if request.user.is_authenticated:
+
+        Events = Event.objects.filter()
+        context = {
+            'Events': Events,
+        }
+        return render(request, 'movies/reservation.html', context=context)
+
+    # User must be logged into their account to add a reservation
+    else:
+        messages.info(request, "You must login to create a purchase")
+        return redirect('/login')
 
 
 # Add reservation to the database
 def add(request):
-    # Get the list of tickets the user put in
-    numTickets = request.POST.getlist('tickets')
-    # Get list of IDs for each ticket
-    eventID = request.POST.getlist('tempId')
-
-    # Boolean to check if the entire array(tickets) is full of 0s
-    isZeros = False
-    # Count number of 0s in the array
-    count0 = 0
-    # Iterate through the numTickets array
-    for r in range(len(numTickets)):
-        # Keep a counter for the number of 0s that exist
-        if int(numTickets[r]) == 0:
-            count0 = count0 + 1
-    # If the entire array is full of 0s then set the boolean to true
-    if count0 == len(numTickets):
-        isZeros = True
-
-    # Iterate through the numTickets array
-    for i in numTickets:
-
-        # Validate the number of tickets the user placed
-        if int(i) < 0:
-            # If it failed then reprompt the user for another input
-            messages.error(request, "The number of tickets you reserve must be a positive integer")
-            Events = Event.objects.filter()
-            context = {
-                'Events': Events,
-            }
-            return render(request, 'movies/reservation.html', context)
-
-    # Place information into the form and authenticate
-    form = ReservationForm(data={'TicketsReserved': 0, 'temp': 0})
-
     # Check if user is logged in
     if request.user.is_authenticated:
+
+        # Get the list of tickets the user put in
+        numTickets = request.POST.getlist('tickets')
+        # Get list of IDs for each ticket
+        eventID = request.POST.getlist('tempId')
+
+        # Boolean to check if the entire array(tickets) is full of 0s
+        isZeros = False
+        # Count number of 0s in the array
+        count0 = 0
+        # Iterate through the numTickets array
+        for r in range(len(numTickets)):
+            # Keep a counter for the number of 0s that exist
+            if int(numTickets[r]) == 0:
+                count0 = count0 + 1
+        # If the entire array is full of 0s then set the boolean to true
+        if count0 == len(numTickets):
+            isZeros = True
+
+        # Iterate through the numTickets array
+        for i in numTickets:
+
+            # Validate the number of tickets the user placed
+            if int(i) < 0:
+                # If it failed then reprompt the user for another input
+                messages.error(request, "The number of tickets you reserve must be a positive integer")
+                Events = Event.objects.filter()
+                context = {
+                    'Events': Events,
+                }
+                return render(request, 'movies/reservation.html', context)
+
+        # Place information into the form and authenticate
+        form = ReservationForm(data={'TicketsReserved': 0, 'temp': 0})
 
         # Check if form is valid
         if form.is_valid():
@@ -297,13 +305,89 @@ def event_form(request):
 
 # Used for the for loop in order to print out reservation information
 def edit_reservation(request):
-    Reservations = Reservation.objects.filter()
-    context = {
-        'Reservations': Reservations,
-    }
-    return render(request, 'movies/edit_reservation.html', context=context)
+    # Check if user is logged in
+    if request.user.is_authenticated:
+
+        Reservations = Reservation.objects.filter()
+        context = {
+            'Reservations': Reservations,
+        }
+        return render(request, 'movies/edit_reservation.html', context=context)
+
+    # User must be logged into their account to add a reservation
+    else:
+        messages.info(request, "You must login to create a purchase")
+        return redirect('/login')
 
 
 # Should take care of deleting reservation
 def delete_reservation(request):
-    return HttpResponseRedirect(reverse('edit_reservation'))
+
+    # Check if user is logged in
+    if request.user.is_authenticated:
+
+        # Get the list of checks the user put in
+        checklist = request.POST.getlist('remove')
+        # Get list of reservation IDs
+        resID = request.POST.getlist('ResID')
+        # Get list of Event IDs
+        eventID = request.POST.getlist('EventID')
+
+        # Stores the number of checkboxes which were selected
+        numChecks = 0
+        # Stores the Reservation IDs that the user wants to remove
+        rem = []
+        # Stores the event IDs that need to get updated
+        updateEvents = []
+        # Counter to update the value of i
+        i = 0
+
+        # Get the number of checks which have been set
+        for c in range(len(checklist)):
+            # If a checkbox has been selected
+            if checklist[c] == 'on':
+                # Attach the relevant IDs to their appropriate lists
+                rem.append(resID[c])
+                updateEvents.append(eventID[c])
+                # Iterate number of checks and i
+                numChecks = numChecks + 1
+                i = i + 1
+
+        # Refresh back to the edit page if no boxes were selected
+        if numChecks == 0:
+            Reservations = Reservation.objects.filter()
+            context = {
+                'Reservations': Reservations,
+            }
+            return render(request, 'movies/edit_reservation.html', context=context)
+
+        # Set counter to keep track of indexes
+        counter = 0
+        # Iterate through the remove array (contains Reservation IDs to remove)
+        for e in rem:
+
+            # Get Reservation to remove
+            currentRes = Reservation.objects.get(ReservationId=e)
+            # Get Event to update
+            currentEvent = Event.objects.get(EventId=updateEvents[counter])
+            counter = counter + 1
+
+            # Need to update the Event with the new number of tickets available
+            currentEvent.AvailableTickets = currentEvent.AvailableTickets + currentRes.TicketsReserved
+            # Save the updated information for Event in the database
+            currentEvent.save()
+
+            # Need to delete the reservation
+            Reservation.objects.filter(ReservationId=e).delete()
+
+        # Refresh the page for now ( need to figure out a way to allow the user to get refunded)
+        Reservations = Reservation.objects.filter()
+        context = {
+            'Reservations': Reservations,
+        }
+        return render(request, 'movies/edit_reservation.html', context=context)
+
+    # User must be logged into their account to add a reservation
+    else:
+        messages.info(request, "You must login to create a purchase")
+        return redirect('/login')

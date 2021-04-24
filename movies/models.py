@@ -21,9 +21,12 @@ class Movie(models.Model):
 class Event(models.Model):
     EventId = models.AutoField(primary_key=True)
     Owner = models.ForeignKey('MyUser', on_delete=models.CASCADE)
+    # Validate Address Syntax using Regex?
     EventAddress = models.CharField(max_length=100)
+    # Need to make sure available tickets is not greater than total tickets
     AvailableTickets = models.IntegerField()
     TotalTickets = models.IntegerField()
+    # Validate Date Time using Regex?
     EventDate = models.DateTimeField()
     MovieId = models.ForeignKey('Movie', on_delete=models.CASCADE)
     EventWebsite = models.URLField(max_length=100)
