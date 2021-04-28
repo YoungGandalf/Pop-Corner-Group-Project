@@ -1,38 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>Map</title>
-        {% load static %}
-        <link rel="stylesheet" href="{% static 'css/style.css' %}" type="text/css">
-        <link rel="stylesheet" href="{% static 'css/all.css' %}" type="text/css">
-    </head>
 
-    <body>
-        <header role="banner" class="menu-nav">
-            <a href="/#index">Home</a>
-            <a href ="/edit_reservation">Account </a>
-            <a href ="/event">Movies</a>
-            <a href ="/map">Locations</a>
-            <a href ="/reservation">Make Reservation</a>
-            <a href = "/payment">Payment</a>
-            <a href ="/about">About Us</a>
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    {%  load static  %}
 
-        <!--Login/Logout Button -->
-            {% if user.is_authenticated %}
-                <a href ="/logout" class="login-button">Logout </a>
-            {% else %}
-                <a href ="/login" class="login-button">Login</a>
-            {% endif %}
+    <title>Map</title>
 
-        </header>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,600,600i,700,700i" rel="stylesheet">
 
-        <h3>University of Maryland, Baltimore County</h3>
-        <div id="map"></div>
+    <!-- Vendor CSS Files -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/venobox/1.9.3/venobox.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/3.0.0-beta.6/aos.css" rel="stylesheet">
+
+    <!-- Template CSS Files -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'css/all.css' %}" type="text/css">
+</head>
+
+<body>
+    <!-- ======= Header ======= -->
+    <header id="header" class="fixed-top">
+        <div class="container-fluid d-flex">
+            <div class="logo mr-auto">
+                <h1 class="text-light"><a href="/#index"><span>PopCorner</span></a></h1>
+            </div>
+
+            <nav class="nav-menu d-none d-lg-block">
+                <ul>
+                    <li class="active"><a href="/#index">Home</a></li>
+                    <li><a href="">About Us</a></li>
+                    <li><a href="/reservation">Movies</a></li>
+                    <li><a href="/map">Location</a></li>
+                    <li><a href="/payment">Checkout</a></li>
+                    {% if user.is_authenticated %}
+                        <li><a href="/edit_reservation">Account</a></li>
+                        <li class="get-started"><a href="/logout">Logout</a></li>
+                    {%  else %}
+                        <li class="get-started"><a href="/login">Login</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div id="map">
+        <div class="container">
         <script type="text/javascript" src="{% static 'js/module.js' %}"></script>
-        <script
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDUYrj8-4B0zXsqYGGfzw28WnDGc7l8Wcs&callback=initMap&libraries=&v=weekly"
-        async></script>
+            <script
+                    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDUYrj8-4B0zXsqYGGfzw28WnDGc7l8Wcs&callback=initMap&libraries=&v=weekly"
+                    async></script>
+        </div>
+    </div>
+</body>
 
-    </body>
 </html>
