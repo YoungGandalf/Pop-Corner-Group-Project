@@ -29,8 +29,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-if DEBUG:
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' #development environment
+#if DEBUG:
+#    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' #development environment
 
 # Application definition
 
@@ -133,3 +133,13 @@ STATICFILES_DIR = ['/movies/migrations/static/',
 django_heroku.settings(locals())
 # STATIC_ROOT = os.path.join(PROJECT_ROOT, 'static')
 # django_heroku.settings(locals())
+
+#SMTP Configuration
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'popcorner447@gmail.com'
+EMAIL_HOST_PASSWORD = 'tnwxboccbjwpdhfj'
+
+
