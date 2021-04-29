@@ -162,6 +162,25 @@ def add(request):
         # Get list of IDs for each ticket
         eventID = request.POST.getlist('tempId')
 
+        # Boolean which checks if the list of NumTickets are valid ints
+        validNum = True
+        # Iterate through the list of tickets and check each one in an integer
+        for c in range(len(numTickets)):
+            # If not an integer then set the boolean to False
+            if not numTickets[c].isdigit():
+                validNum = False
+
+        # If the boolean is set to false then reprompt the user for another input
+        if not validNum:
+            # If it failed then reprompt the user for another input
+            messages.error(request,
+                           "The number of tickets you entered contains characters. Please only include integers.")
+            Events = Event.objects.filter()
+            context = {
+                'Events': Events,
+            }
+            return render(request, 'movies/reservation.html', context)
+
         # Boolean to check if the entire array(tickets) is full of 0s
         isZeros = False
         # Count number of 0s in the array
@@ -322,7 +341,6 @@ def edit_reservation(request):
 
 # Should take care of deleting reservation
 def delete_reservation(request):
-
     # Check if user is logged in
     if request.user.is_authenticated:
 
@@ -365,7 +383,6 @@ def delete_reservation(request):
         counter = 0
         # Iterate through the remove array (contains Reservation IDs to remove)
         for e in rem:
-
             # Get Reservation to remove
             currentRes = Reservation.objects.get(ReservationId=e)
             # Get Event to update
