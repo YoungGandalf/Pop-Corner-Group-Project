@@ -151,6 +151,7 @@ class ReservationTestCase(TestCase):
                                     data={'tickets': '-15', 'tempID': '1'})
         self.assertEqual(response.status_code, 200)
 
+
 # Tests for Event Form
 class EventTestCases(TestCase):
     def test_EventTestCases_valid(self):
@@ -190,9 +191,43 @@ class PasswordResetCase(TestCase):
         # checks if the password is properly reset
         # THIS TEST DOES NOT WORK RIGHT NOW BECAUSE I'M NOT SURE HOW TO ENCODE THE UIDB64, BUT THE TOKEN IS CORRECT
         response = self.client.get(reverse('/password-reset-confirm/' + str(base64.b64encode(bytes(user.id))) +
-                                        '/' + str(token)), {'new_password1:Lemons123', 'new_password2:Lemons123'})
+                                           '/' + str(token)), {'new_password1:Lemons123', 'new_password2:Lemons123'})
         self.assertEqual(response.status_code, 302)
 
         # once the password is change, checks if the login is correct
         # BECAUSE THE ABOVE STATEMENT DOES NOT WORK, THIS STATEMENT IS FALSE
         # self.assertTrue(self.client.login(username='testing', password='Lemons123'))
+
+
+# Tests for creating a reservation
+class EditReservationTestCase(TestCase):
+    # Need to initialize a user that is logged in, an owner (MyUser) who owns the event, a movie and possible
+    def setUp(self):
+        testOwner = MyUser(UserEmail="owner@gmail.com", UserPassword="Owner123", UserName="owner",
+                           UserPhoneNumber="123-456-7890", IsBusiness=True)
+        testOwner.save()
+        testUser = MyUser(UserEmail="testing@gmail.com", UserPassword="Testing123", UserName="testing",
+                          UserPhoneNumber="123-456-7890", IsBusiness=False)
+        testUser.save()
+        testMovie = Movie(MovieName="Aladdin", MovieDuration="128")
+        testMovie.save()
+        testEvent = Event(Owner_id="owner@gmail.com", EventAddress="5142 Owner Road Business California 12345",
+                          AvailableTickets=8, TotalTickets=10, EventDate='2021-10-25 10:20:01', MovieId_id=1,
+                          EventWebsite="www.business.com")
+        testEvent.save()
+        testReservation = Reservation(Owner_id="owner@gmail.com", EventId_id=1, TicketsReserved=2)
+        testReservation.save()
+        user = User.objects.create_user(username='testing', password='Testing123')
+        self.client.login(username='testing', password='Testing123')
+
+    # Testing no checkbox which will redirect back to the same page
+    def test_delete_reservation(self):
+        response = self.client.post(reverse('delete_reservation'),
+                                    data={'checkbox': 'off', 'ResID': '1', 'EventID': '1'})
+        self.assertEqual(response.status_code, 200)
+
+    # Testing a checkbox was selected will redirect back to the same page
+    def test_delete_reservation(self):
+        response = self.client.post(reverse('delete_reservation'),
+                                    data={'checkbox': 'on', 'ResID': '1', 'EventID': '1'})
+        self.assertEqual(response.status_code, 200)
