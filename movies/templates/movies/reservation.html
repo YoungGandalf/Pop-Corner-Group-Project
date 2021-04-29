@@ -2,84 +2,97 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <title>Add your reservation information</title>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
     {%  load static  %}
+
+    <title>Add Reservation</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,600,600i,700,700i" rel="stylesheet">
+
+    <!-- Vendor CSS Files -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/venobox/1.9.3/venobox.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/3.0.0-beta.6/aos.css" rel="stylesheet">
+
+    <!-- Template CSS Files -->
     <link rel="stylesheet" href="{% static 'css/all.css' %}" type="text/css">
 </head>
 
 <body>
-    <header role="banner" class="menu-nav">
-        <a href="/#index">Home</a>
-        <div class="sub-menu-nav">
-            <button class="sub-menu-btn">Account</button>
-            <div class="sub-menu-content">
-                <a href="/signup">Sign Up</a>
-                <a href="/login">Login</a>
-                <a href="/logout">Logout</a>
+    <!-- ======= Header ======= -->
+    <header id="header" class="fixed-top">
+        <div class="container-fluid d-flex">
+            <div class="logo mr-auto">
+                <h1 class="text-light"><a href="/#index"><span>PopCorner</span></a></h1>
             </div>
+
+            <nav class="nav-menu d-none d-lg-block">
+                <ul>
+                    <li class="active"><a href="/#index">Home</a></li>
+                    <li><a href="">About Us</a></li>
+                    <li><a href="/reservation">Movies</a></li>
+                    <li><a href="/map">Location</a></li>
+                    <li><a href="/payment">Checkout</a></li>
+                    {% if user.is_authenticated %}
+                        <li><a href="/edit_reservation">Account</a></li>
+                        <li class="get-started"><a href="/logout">Logout</a></li>
+                    {%  else %}
+                        <li class="get-started"><a href="/login">Login</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
         </div>
-        <a href ="/movies">Movies</a>
-        <a href ="/map">Locations</a>
-        <a href ="/reservation">Make Reservation</a>
-        <!-- Tab does not align properly
-        <div class="sub-menu-nav">
-        <button class="sub-menu-btn">Reservation</button>
-            <div class="sub-menu-content">
-                <a href="/reservation">Make Reservation</a>
-                <a href="/edit_reservation">Edit Reservation</a>
-            </div>
-        </div>
-        -->
-        <a href = "/payment">Payment</a>
-        <a href ="/about">About Us</a>
     </header>
 
-    <h1 style="color:tomato;font-size:150%;font-family:'Optima';">Reservation Info</h1>
-
-    <div class="page-content">
-    <p>
-        Here are possible movies to watch with the associating dates and times:
-        <ol>
-
-            {% if messages %}
-                <ul class="messages">
-                    {% for message in messages %}
-                        <li  {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
-            {% if error %}
-                {{ error }}
-            {% endif %}
-
-        <form action="/add/" method="POST">
-
-            {% for Event in Events %}
-                {% if Event.AvailableTickets > 0 %}
-                     <!-- Print out Relevant Information for the Movie-->
-                    <li>Movie Name: {{ Event.MovieId.MovieName }}  <br>
-                        Event Address: {{ Event.EventAddress }} <br>
-                        Event Date:{{ Event.EventDate }} </li>
-                        Number of Tickets Available: {{ Event.AvailableTickets }}<br>
-
-                            {% csrf_token %}
-                            <!-- Both inputs need to be a list (specified by id) -->
-                            <!-- Ask User for the number of tickets (default is 0)-->
-                            How many tickets would you like to buy?
-                            <input type="integer" name="tickets" id="tickets.id" value = 0><br/>
-                            <!-- Store the current Event ID -->
-                            <input type="hidden" value={{ Event.EventId }} name=tempId id="temp.id" readonly><br>
-
-                {% endif %}
-            {% endfor %}
-        <input type="submit" name="submit" value="Add Reservation"/>
-        </form>
-        </ol>
-    </p>
-    If you would like to view or edit your reservation, <a href = "/edit_reservation"><strong>View/Edit Reservations</strong></a>.
-    </div>
-
+    <!-- ======= Hero Section ======= -->
+    <section id="hero" class="d-flex align-items-center">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 pt-5 pt-lg-0 order-2 order-lg-1">
+                    <h1 style="color:tomato;font-size:150%;font-family:'Optima';">Reservation Info</h1>
+                    <p>
+                        Here are possible movies to watch with the associating dates and times:
+                    <ol>
+                    {% if messages %}
+                        <ul class="messages">
+                            {% for message in messages %}
+                                <li  {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                    {% if error %}
+                        {{ error }}
+                    {% endif %}
+                    <form action="/add/" method="POST">
+                        {% for Event in Events %}
+                            {% if Event.AvailableTickets > 0 %}
+                                <!-- Print out Relevant Information for the Movie-->
+                                <li>Movie Name: {{ Event.MovieId.MovieName }}  <br>
+                                    Event Address: {{ Event.EventAddress }} <br>
+                                    Event Date:{{ Event.EventDate }} </li>
+                                Number of Tickets Available: {{ Event.AvailableTickets }}<br>
+                                {% csrf_token %}
+                                <!-- Both inputs need to be a list (specified by id) -->
+                                <!-- Ask User for the number of tickets (default is 0)-->
+                                How many tickets would you like to buy?
+                                <input type="integer" name="tickets" id="tickets.id" value = 0><br/>
+                                <!-- Store the current Event ID -->
+                                <input type="hidden" value={{ Event.EventId }} name=tempId id="temp.id" readonly>
+                                <br>
+                            {% endif %}
+                        {% endfor %}
+                        <input type="submit" name="submit" value="Add Reservation"/>
+                    </form>
+                    </ol>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
 </body>
 
 </html>
