@@ -1,7 +1,10 @@
+<!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>Sign Up for PopCorner</title>
+    <!-- Specifies the name of the tab -->
+    <title>Welcome to PopCorner!</title>
     {%  load static  %}
     <link rel="stylesheet" href="{% static 'css/all.css' %}" type="text/css">
 </head>
@@ -25,19 +28,14 @@
         <a href ="/about">About Us</a>
     </header>
 
-    <div class="page-content">
-        <h1 style="color:tomato;font-size:150%;font-family:'Optima';">Sign Up</h1>
+        <h1>List of Movies</h1>
 
-        <form action="" method="POST">
-        {% csrf_token %}
-            <! -- Print out errors before the textbox on the form -->
-        {% if error %}
-        {{ error }}
-        {% endif %}
-            <! -- Print out each textbox in the form -->
-        {{ form.as_p }}
-        <input type="submit" name="submit" value="Sign up"/>
-        </form>
+        {% for Movie in allMovies %}
+            {{ Movie.MovieName }} {{ ":" }}
+            {{ Movie.MovieDuration }} {{ "minutes" }}
+            <br><br>
+        {% endfor %}
+        </table>
     </div>
 
 </body>

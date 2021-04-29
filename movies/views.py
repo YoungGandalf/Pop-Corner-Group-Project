@@ -307,3 +307,24 @@ def edit_reservation(request):
 # Should take care of deleting reservation
 def delete_reservation(request):
     return HttpResponseRedirect(reverse('edit_reservation'))
+
+
+def movies_list(request):
+    allMovies = Movie.objects.all()
+    context = {'allMovies': allMovies}
+    return render(request, 'movies/movies_list.html', context=context)
+
+
+# function to add a movie to users watchlist
+def watch_list(request):
+    # Already Logged In
+    if request.user.is_authenticated:
+        # getting list of favorite movies from user
+        FavMovies = Watchlist.objects.all()
+        context = {'FavMovies': FavMovies}
+        return render(request, 'movies/watch_list.html', context=context)
+    else:
+        messages.info(request, "Please log in to add a movie to your watch list")
+        return render(request, 'movies/login.html')
+
+# need to make button function for saving movies to watch
