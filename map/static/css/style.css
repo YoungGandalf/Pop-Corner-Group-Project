@@ -1,5 +1,6 @@
 #map {
-  height: 100%;
+    position: relative;
+    margin-top: 50%;
 }
 
 html,
@@ -14,4 +15,5 @@ h3 {
     text-align: left;
     font-family: "Calibri", serif;
     font-size: 22px;
+    margin-top: 50px;
 }
