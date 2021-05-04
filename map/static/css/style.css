@@ -1,19 +1,12 @@
 #map {
-    position: relative;
-    margin-top: 50%;
+    margin: auto;
+    height: 90%;
+    width: 90%;
 }
 
 html,
 body {
-  height: 90%;
-  margin: 0;
+  height: 100%;
+  margin-top: 50px;
   padding: 0;
-}
-
-h3 {
-    color: black;
-    text-align: left;
-    font-family: "Calibri", serif;
-    font-size: 22px;
-    margin-top: 50px;
 }
