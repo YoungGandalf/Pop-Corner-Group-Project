@@ -17,23 +17,23 @@ function initMap() {
         zoom: 13,
     });
 
-    var infowindow = new google.maps.InfoWindow({});
-
-    for (var count = 0; count < locations.length; count++){
+    for (var i = 0; i < locations.length; i++){
+        var place = locations[i];
+        var myLatLng = new google.maps.LatLng(place[1], place[2]);
         var marker = new google.maps.Marker({
-            position: new google.maps.LatLng(locations[count][1],
-                locations[count][2]),
+            position: myLatLng,
             map: map,
-            title: locations[count][0]
+            title: place[0],
+            url: "#1234 John Street California MD 12345"
         });
 
-        google.maps.event.addListener(marker, 'click',
-            (function (marker, count) {
-                return function() {
-                    infowindow.setContent(locations[count][0]);
-                    infowindow.open(map, marker);
-                }
-            }) (marker, count));
-    }
+        google.maps.event.addListener(marker, 'onmouseover', function(){
+            infowindow.setContent(marker.title);
+            infowindow.open(map, marker);
+        })
 
+        google.maps.event.addListener(marker, 'click', function(){
+            window.location.href = marker.url;
+        });
+    }
 }
