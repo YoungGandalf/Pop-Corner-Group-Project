@@ -55,43 +55,50 @@
                 <div class="col-lg-6 pt-5 pt-lg-0 order-2 order-lg-1">
                     <h1 style="color:tomato;font-size:150%;font-family:'Optima';">View/Edit Reservation</h1>
                     <p>
-                        Here are your reservations so far:
-                        <ol>
+                        {% if Count != 0 %}
+                            Here are your reservations so far:
+                            <ol>
 
-                            {% if messages %}
-                                <ul class="messages">
-                                    {% for message in messages %}
-                                        <li  {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </li>
-                                    {% endfor %}
-                                </ul>
-                            {% endif %}
-                            {% if error %}
-                                {{ error }}
-                            {% endif %}
-
-                        <form action="/delete_reservation/" method="POST">
-                            {% csrf_token %}
-                            {% for Reservation in Reservations %}
-                                <!-- Only print out information related to the current user-->
-                                {% if user.username == Reservation.Owner.UserName %}
-                                    <!-- Print out Relevant Information for the Reservation-->
-                                    <li>Movie: {{ Reservation.EventId.MovieId.MovieName }} <br>
-                                        Date/Time: {{ Reservation.EventId.EventDate }} <br>
-                                        Address: {{ Reservation.EventId.EventAddress }} <br>
-                                        Number of Tickets Reserved: {{ Reservation.TicketsReserved }} <br>
-
-                                        Would you like to remove this reservation?
-                                        <input type="checkbox" name="remove" id="remove.id"></li><br/>
-                                        <!-- Store the current Reservation ID -->
-                                        <input type="hidden" value={{ Reservation.ReservationId }} name=ResID id="ResID.id" readonly>
-                                        <!-- Store the current Event ID -->
-                                        <input type="hidden" value={{ Reservation.EventId_id }} name=EventID id="EventID.id" readonly>
-
+                                {% if messages %}
+                                    <ul class="messages">
+                                        {% for message in messages %}
+                                            <li  {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </li>
+                                        {% endfor %}
+                                    </ul>
                                 {% endif %}
-                            {% endfor %}
-                            <input type="submit" name="submit" value="Submit Edits"/>
-                        </form>
-                        </ol>
+                                {% if error %}
+                                    {{ error }}
+                                {% endif %}
+
+                                <form action="/delete_reservation/" method="POST">
+                                    {% if Count != 0 %}
+                                        {% csrf_token %}
+                                        {% for Reservation in Reservations %}
+                                            <!-- Only print out information related to the current user-->
+                                            {% if user.username == Reservation.Owner.UserName %}
+                                                <!-- Print out Relevant Information for the Reservation-->
+                                                <li> <img src="{{Reservation.EventId.MovieId.MoviePic}}"/ height="150px"> <br/> </li>
+                                                    Movie: {{ Reservation.EventId.MovieId.MovieName }} <br>
+                                                    Date/Time: {{ Reservation.EventId.EventDate }} <br>
+                                                    Address: {{ Reservation.EventId.EventAddress }} <br>
+                                                    Number of Tickets Reserved: {{ Reservation.TicketsReserved }} <br>
+
+                                                    Would you like to remove this reservation?
+                                                    <!-- Store the current Reservation ID inside the checkbox -->
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" value={{ Reservation.ReservationId }} id="ResID.id" name="res">
+                                                        <label class="form-check-label" for="ResID.id"></label>
+                                                    </div>
+
+                                            {% endif %}
+                                        {% endfor %}
+                                        <input type="submit" name="submit" value="Submit Edits"/>
+                                    {% endif %}
+                                </form>
+                            </ol>
+                        {% else %}
+                            Currently, you do not have any reservations to view.
+                        {% endif %}
                     </p>
                     If you would like to create a reservation, <a href = "/reservation"><strong>Reservation</strong></a>.
                 </div>

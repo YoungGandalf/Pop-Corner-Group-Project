@@ -141,8 +141,10 @@ def reservation(request):
     if request.user.is_authenticated:
 
         Events = Event.objects.filter()
+        Count = Event.objects.filter().count()
         context = {
             'Events': Events,
+            'Count': Count,
         }
         return render(request, 'movies/reservation.html', context=context)
 
@@ -312,8 +314,12 @@ def edit_reservation(request):
     if request.user.is_authenticated:
 
         Reservations = Reservation.objects.filter()
+        username = request.user.get_username()
+        owner_ID = MyUser.objects.get(UserName=username)
+        Count = Reservation.objects.filter(Owner_id=owner_ID.UserEmail).count()
         context = {
             'Reservations': Reservations,
+            'Count': Count,
         }
         return render(request, 'movies/edit_reservation.html', context=context)
 
@@ -327,68 +333,48 @@ def edit_reservation(request):
 def delete_reservation(request):
     # Check if user is logged in
     if request.user.is_authenticated:
+        if request.method == 'POST':
+            res = request.POST.getlist('res')
 
-        # Get the list of checks the user put in
-        checklist = request.POST.getlist('remove')
-        # Get list of reservation IDs
-        resID = request.POST.getlist('ResID')
-        # Get list of Event IDs
-        eventID = request.POST.getlist('EventID')
+            # Refresh back to the edit page if no boxes were selected
+            if len(res) == 0:
+                Reservations = Reservation.objects.filter()
+                username = request.user.get_username()
+                owner_ID = MyUser.objects.get(UserName=username)
+                Count = Reservation.objects.filter(Owner_id=owner_ID.UserEmail).count()
+                context = {
+                    'Reservations': Reservations,
+                    'Count': Count,
+                }
+                messages.info(request, "You did make any edits to your reservations.")
+                return render(request, 'movies/edit_reservation.html', context=context)
 
-        # Stores the number of checkboxes which were selected
-        numChecks = 0
-        # Stores the Reservation IDs that the user wants to remove
-        rem = []
-        # Stores the event IDs that need to get updated
-        updateEvents = []
-        # Counter to update the value of i
-        i = 0
+            for Res in res:
+                # Get Reservation to remove
+                currentRes = Reservation.objects.get(ReservationId=Res)
+                # Get Event to update
+                currentEvent = Event.objects.get(EventId=currentRes.EventId_id)
 
-        # Get the number of checks which have been set
-        for c in range(len(checklist)):
-            # If a checkbox has been selected
-            if checklist[c] == 'on':
-                # Attach the relevant IDs to their appropriate lists
-                rem.append(resID[c])
-                updateEvents.append(eventID[c])
-                # Iterate number of checks and i
-                numChecks = numChecks + 1
-                i = i + 1
+                # Need to update the Event with the new number of tickets available
+                currentEvent.AvailableTickets = currentEvent.AvailableTickets + currentRes.TicketsReserved
+                # Save the updated information for Event in the database
+                currentEvent.save()
 
-        # Refresh back to the edit page if no boxes were selected
-        if numChecks == 0:
+                # Need to delete the reservation
+                Reservation.objects.filter(ReservationId=Res).delete()
+
+            # Refresh the page for now ( need to figure out a way to allow the user to get refunded)
             Reservations = Reservation.objects.filter()
+            username = request.user.get_username()
+            owner_ID = MyUser.objects.get(UserName=username)
+            Count = Reservation.objects.filter(Owner_id=owner_ID.UserEmail).count()
             context = {
                 'Reservations': Reservations,
+                'Count': Count,
             }
             return render(request, 'movies/edit_reservation.html', context=context)
 
-        # Set counter to keep track of indexes
-        counter = 0
-        # Iterate through the remove array (contains Reservation IDs to remove)
-        for e in rem:
-            # Get Reservation to remove
-            currentRes = Reservation.objects.get(ReservationId=e)
-            # Get Event to update
-            currentEvent = Event.objects.get(EventId=updateEvents[counter])
-            counter = counter + 1
-
-            # Need to update the Event with the new number of tickets available
-            currentEvent.AvailableTickets = currentEvent.AvailableTickets + currentRes.TicketsReserved
-            # Save the updated information for Event in the database
-            currentEvent.save()
-
-            # Need to delete the reservation
-            Reservation.objects.filter(ReservationId=e).delete()
-
-        # Refresh the page for now ( need to figure out a way to allow the user to get refunded)
-        Reservations = Reservation.objects.filter()
-        context = {
-            'Reservations': Reservations,
-        }
-        return render(request, 'movies/edit_reservation.html', context=context)
-
-    # User must be logged into their account to add a reservation
+    # If user is not logged in
     else:
         messages.info(request, "You must login to create a purchase")
         return redirect('/login')
