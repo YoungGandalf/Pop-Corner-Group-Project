@@ -2,6 +2,10 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse
 
+from django.core.mail import EmailMessage
+from django.conf import settings
+from django.template.loader import render_to_string
+
 from .forms import *
 from django.contrib.auth.models import User
 from django.contrib.auth import login, authenticate, logout
@@ -131,7 +135,7 @@ def add_payment(request):
 
     # User must be logged into their account to add a credit card
     else:
-        messages.info(request, "You must login to add payment information")
+        messages.error(request, "You must login to add payment information")
         return redirect('/login')
 
 
@@ -251,6 +255,21 @@ def add(request):
             if int(numTickets[counter]) != 0:
                 # Save the updated reservation in the database
                 reservation.save()
+                # Sends email confirmation with reservation information
+                template = render_to_string('movies/email_template.html', {'name': currentUser.UserName,
+                                                                           'num_tickets': int(numTickets[counter]),
+                                                                           'event_name': currentEvent.MovieId.MovieName,
+                                                                           'event_date': currentEvent.EventDate,
+                                                                           'event_location': currentEvent.EventAddress})
+                email = EmailMessage(
+                    'PopCorner - Ticket Confirmation',
+                    template,
+                    settings.EMAIL_HOST_USER,
+                    [currentUser.UserEmail]
+                )
+
+                email.fail_silently = False
+                email.send()
             counter = counter + 1  # Iterate counter
 
         # If for some reason there are no entries (full of 0s) then just reprompt to the reservation page
@@ -261,9 +280,19 @@ def add(request):
                 'Events': Events,
             }
             return render(request, 'movies/reservation.html', context)
+        # Clear the form and go to the payment page to proceed
         else:
-            # Go to the payment page to proceed
-            return redirect('/payment')
+            # check if the user has any credit cards already in the database
+            if Payment.objects.filter(Owner_id=currentUser.UserEmail).exists():
+                Payments = Payment.objects.filter(Owner_id=currentUser.UserEmail)
+                context = {
+                    'Payments': Payments,
+                }
+                return render(request, 'movies/pick_payment.html', context=context)
+            # If no credit cards exist then go to the payment page
+            else:
+                form = ReservationForm(None)
+                return redirect('/payment')
 
     # User must be logged into their account to add a reservation
     else:
@@ -272,40 +301,55 @@ def add(request):
 
 
 def event_form(request):
-    # Initialize form with the data from the site or none
-    form = EventForm(request.POST or None)
-    if request.method == 'POST':
-        # If the form is valid
-        if form.is_valid():
-            # Owner user email for foreign key in Event object creation
-            # this gets the MyUser primary key and stores it in ownerID
-            username = request.user.get_username()
-            owner_ID = MyUser.objects.get(UserName=username)
+    # Check if user is logged in
+    if request.user.is_authenticated:
 
-            # Get data from form to store in event class object
-            eventObj = Event(
-                # EventId  Need to go and get the primary key from the event field
-                Owner_id=owner_ID.UserEmail,
-                EventAddress=form.cleaned_data.get('EventAddress'),
-                AvailableTickets=form.cleaned_data.get('AvailableTickets'),
-                TotalTickets=form.cleaned_data.get('TotalTickets'),
-                EventDate=form.cleaned_data.get('EventDate'),
-                EventWebsite=form.cleaned_data.get('EventWebsite'),
-                MovieId_id=1
-            )
-            eventObj.save()
-            form = EventForm(None)
-            context = {'form': form}
-            messages.info(request, "Your event has been successfully added!")
-            return render(request, 'movies/index.html', context)
+        # Checks if user is a business while also...
+        # Owner user email for foreign key in Event object creation
+        # this gets the MyUser primary key and stores it in ownerID
+        username = request.user.get_username()
+        owner_ID = MyUser.objects.get(UserName=username)
+
+        if (owner_ID.IsBusiness == True):
+
+            # Initialize form with the data from the site or none
+            form = EventForm(request.POST or None)
+
+            if request.method == 'POST':
+                # If the form is valid
+                if form.is_valid():
+
+                    # Get data from form to store in event class object
+                    eventObj = Event(
+                        # EventId  Need to go and get the primary key from the event field
+                        Owner_id=owner_ID.UserEmail,
+                        EventAddress=form.cleaned_data.get('EventAddress'),
+                        AvailableTickets=form.cleaned_data.get('AvailableTickets'),
+                        TotalTickets=form.cleaned_data.get('TotalTickets'),
+                        EventDate=form.cleaned_data.get('EventDate'),
+                        EventWebsite=form.cleaned_data.get('EventWebsite'),
+                        MovieId_id=1
+                    )
+                    eventObj.save()
+                    form = EventForm(None)
+                    context = {'form': form}
+                    messages.info(request, "Your event has been successfully added!")
+                    return render(request, 'movies/index.html', context)
+                else:
+                    form = event_form(None)
+                    context = {'form': form}
+                    return render(request, 'movies/event.html', context)
+            else:
+                # Reload page if form is not valid
+                context = {'form': form}
+                return render(request, 'movies/event.html', context)
         else:
-            form = event_form(None)
-            context = {'form': form}
-            return render(request, 'movies/event.html', context)
+            messages.error(request, "You do not have access to this page."
+                                    "\nIf you believe this is a mistake please login again!")
+            return redirect('/#index')
     else:
-        # Reload page if form is not valid
-        context = {'form': form}
-        return render(request, 'movies/event.html', context)
+        messages.error(request, "You must login in order to fill out this form")
+        return redirect('/login')
 
 
 # Used for the for loop in order to print out reservation information
@@ -388,6 +432,9 @@ def delete_reservation(request):
         messages.info(request, "You must login to create a purchase")
         return redirect('/login')
 
+def finish_payment(request):
+    messages.info(request, "You have successfully purchased a ticket!\nCheck your email for confirmation!")
+    return redirect('/#index')
 
 def about_us(request):
     return render(request, 'movies/about_us.html')
