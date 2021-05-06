@@ -2,6 +2,10 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse
 
+from django.core.mail import EmailMessage
+from django.conf import settings
+from django.template.loader import render_to_string
+
 from .forms import *
 from django.contrib.auth.models import User
 from django.contrib.auth import login, authenticate, logout
@@ -251,10 +255,26 @@ def add(request):
                                               EventId_id=currentEvent.EventId,
                                               TicketsReserved=int(numTickets[counter]))
 
+
                 # If the current number of ticket is not equal to 0 then save the reservation
                 if int(numTickets[counter]) != 0:
                     # Save the updated reservation in the database
                     reservation.save()
+                    # Sends email confirmation with reservation information
+                    template = render_to_string('movies/email_template.html', {'name': currentUser.UserName,
+                                                                               'num_tickets': int(numTickets[counter]),
+                                                                               'event_name': currentEvent.MovieId.MovieName,
+                                                                               'event_date': currentEvent.EventDate,
+                                                                               'event_location': currentEvent.EventAddress})
+                    email = EmailMessage(
+                        'PopCorner - Ticket Confirmation',
+                        template,
+                        settings.EMAIL_HOST_USER,
+                        [currentUser.UserEmail]
+                    )
+
+                    email.fail_silently = False
+                    email.send()
                 counter = counter + 1  # Iterate counter
 
             # If for some reason there are no entries (full of 0s) then just reprompt to the reservation page
@@ -433,5 +453,6 @@ def delete_reservation(request):
 
 
 def finish_payment(request):
-    return redirect('/reservation')
+    messages.info(request, "You have successfully purchased a ticket!\nCheck your email for confirmation!")
+    return redirect('/#index')
 
