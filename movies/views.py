@@ -69,7 +69,7 @@ def signup(request):
 def login_user(request):
     # Already Logged In
     if request.user.is_authenticated:
-        messages.error(request, "You are already logged in!")
+        messages.info(request, "You are already logged in!")
         return render(request, 'movies/index.html')
 
     if request.method == 'POST':
@@ -145,8 +145,10 @@ def reservation(request):
     if request.user.is_authenticated:
 
         Events = Event.objects.filter()
+        Count = Event.objects.filter().count()
         context = {
             'Events': Events,
+            'Count': Count,
         }
         return render(request, 'movies/reservation.html', context=context)
 
@@ -211,105 +213,89 @@ def add(request):
                 }
                 return render(request, 'movies/reservation.html', context)
 
-        # Place information into the form and authenticate
-        form = ReservationForm(data={'TicketsReserved': 0, 'temp': 0})
+        # Grab current users email for foreign key in Reservation object creation,
+        username = request.user.get_username()
+        currentUser = MyUser.objects.get(UserName=username)
 
-        # Check if form is valid
-        if form.is_valid():
+        # Set counter to keep track of indexes
+        counter = 0
+        # Iterate through the eventID array
+        for e in eventID:
 
-            # Grab current users email for foreign key in Reservation object creation,
-            username = request.user.get_username()
-            currentUser = MyUser.objects.get(UserName=username)
+            # Get Event associated with the tempID
+            currentEvent = Event.objects.get(EventId=e)
 
-            # Set counter to keep track of indexes
-            counter = 0
-            # Iterate through the eventID array
-            for e in eventID:
+            # Need to update the Event with the current number of tickets available
+            currentEvent.AvailableTickets = currentEvent.AvailableTickets - int(numTickets[counter])
 
-                # Get Event associated with the tempID
-                currentEvent = Event.objects.get(EventId=e)
-
-                # Need to update the Event with the current number of tickets available
-                currentEvent.AvailableTickets = currentEvent.AvailableTickets - int(numTickets[counter])
-
-                # Make sure the ticket number entered was valid
-                if currentEvent.AvailableTickets < 0:
-                    # If it failed then reprompt the user for another input
-                    messages.error(request, "The number of tickets you reserved must be less than this input")
-                    Events = Event.objects.filter()
-                    context = {
-                        'Events': Events,
-                    }
-                    return render(request, 'movies/reservation.html', context)
-
-                # Save the updated information for Event in the database
-                currentEvent.save()
-
-                # If the reservation already exists then just add to the reservation (filter by event id and owner)
-                if Reservation.objects.filter(EventId_id=currentEvent.EventId).filter(Owner=currentUser).exists():
-                    reservation = Reservation.objects.get(EventId_id=currentEvent.EventId, Owner=currentUser)
-                    reservation.TicketsReserved = reservation.TicketsReserved + int(numTickets[counter])
-                else:
-                    # Create new reservation object and save it with the appropriate information
-                    reservation = Reservation(Owner_id=currentUser.UserEmail,
-                                              EventId_id=currentEvent.EventId,
-                                              TicketsReserved=int(numTickets[counter]))
-
-
-                # If the current number of ticket is not equal to 0 then save the reservation
-                if int(numTickets[counter]) != 0:
-                    # Save the updated reservation in the database
-                    reservation.save()
-                    # Sends email confirmation with reservation information
-                    template = render_to_string('movies/email_template.html', {'name': currentUser.UserName,
-                                                                               'num_tickets': int(numTickets[counter]),
-                                                                               'event_name': currentEvent.MovieId.MovieName,
-                                                                               'event_date': currentEvent.EventDate,
-                                                                               'event_location': currentEvent.EventAddress})
-                    email = EmailMessage(
-                        'PopCorner - Ticket Confirmation',
-                        template,
-                        settings.EMAIL_HOST_USER,
-                        [currentUser.UserEmail]
-                    )
-
-                    email.fail_silently = False
-                    email.send()
-                counter = counter + 1  # Iterate counter
-
-            # If for some reason there are no entries (full of 0s) then just reprompt to the reservation page
-            if isZeros:
-                # Reload page if form is not valid
+            # Make sure the ticket number entered was valid
+            if currentEvent.AvailableTickets < 0:
+                # If it failed then reprompt the user for another input
+                messages.error(request, "The number of tickets you reserved must be less than this input")
                 Events = Event.objects.filter()
                 context = {
                     'Events': Events,
                 }
                 return render(request, 'movies/reservation.html', context)
+
+            # Save the updated information for Event in the database
+            currentEvent.save()
+
+            # If the reservation already exists then just add to the reservation (filter by event id and owner)
+            if Reservation.objects.filter(EventId_id=currentEvent.EventId).filter(Owner=currentUser).exists():
+                reservation = Reservation.objects.get(EventId_id=currentEvent.EventId, Owner=currentUser)
+                reservation.TicketsReserved = reservation.TicketsReserved + int(numTickets[counter])
             else:
-                # Clear the form and go to the payment page to proceed
-                if Payment.objects.filter(Owner_id=currentUser.UserEmail).exists():
-                    Payments = Payment.objects.filter(Owner_id=currentUser.UserEmail)
-                    context = {
-                        'Payments': Payments,
-                    }
-                    return render(request, 'movies/pick_payment.html', context=context)
+                # Create new reservation object and save it with the appropriate information
+                reservation = Reservation(Owner_id=currentUser.UserEmail,
+                                          EventId_id=currentEvent.EventId,
+                                          TicketsReserved=int(numTickets[counter]))
 
-                else:
-                    form = ReservationForm(None)
-                    return redirect('/payment')
+            # If the current number of ticket is not equal to 0 then save the reservation
+            if int(numTickets[counter]) != 0:
+                # Save the updated reservation in the database
+                reservation.save()
+                # Sends email confirmation with reservation information
+                template = render_to_string('movies/email_template.html', {'name': currentUser.UserName,
+                                                                           'num_tickets': int(numTickets[counter]),
+                                                                           'event_name': currentEvent.MovieId.MovieName,
+                                                                           'event_date': currentEvent.EventDate,
+                                                                           'event_location': currentEvent.EventAddress})
+                email = EmailMessage(
+                    'PopCorner - Ticket Confirmation',
+                    template,
+                    settings.EMAIL_HOST_USER,
+                    [currentUser.UserEmail]
+                )
 
-        # Else statement for invalid forms
-        else:
+                email.fail_silently = False
+                email.send()
+            counter = counter + 1  # Iterate counter
+
+        # If for some reason there are no entries (full of 0s) then just reprompt to the reservation page
+        if isZeros:
             # Reload page if form is not valid
             Events = Event.objects.filter()
             context = {
                 'Events': Events,
             }
             return render(request, 'movies/reservation.html', context)
+        # Clear the form and go to the payment page to proceed
+        else:
+            # check if the user has any credit cards already in the database
+            if Payment.objects.filter(Owner_id=currentUser.UserEmail).exists():
+                Payments = Payment.objects.filter(Owner_id=currentUser.UserEmail)
+                context = {
+                    'Payments': Payments,
+                }
+                return render(request, 'movies/pick_payment.html', context=context)
+            # If no credit cards exist then go to the payment page
+            else:
+                return redirect('/payment')
 
     # User must be logged into their account to add a reservation
     else:
-        messages.error(request, "You must login to create a purchase")
+        messages.info(request, "You must login to create a purchase")
         return redirect('/login')
 
 
@@ -364,14 +350,21 @@ def event_form(request):
         messages.error(request, "You must login in order to fill out this form")
         return redirect('/login')
 
+
 # Used for the for loop in order to print out reservation information
 def edit_reservation(request):
     # Check if user is logged in
     if request.user.is_authenticated:
 
         Reservations = Reservation.objects.filter()
+        # Get the current user's information
+        username = request.user.get_username()
+        owner_ID = MyUser.objects.get(UserName=username)
+        # Get the number of reservations the current user has made
+        Count = Reservation.objects.filter(Owner_id=owner_ID.UserEmail).count()
         context = {
             'Reservations': Reservations,
+            'Count': Count,
         }
         return render(request, 'movies/edit_reservation.html', context=context)
 
@@ -386,73 +379,61 @@ def delete_reservation(request):
     # Check if user is logged in
     if request.user.is_authenticated:
 
-        # Get the list of checks the user put in
-        checklist = request.POST.getlist('remove')
-        # Get list of reservation IDs
-        resID = request.POST.getlist('ResID')
-        # Get list of Event IDs
-        eventID = request.POST.getlist('EventID')
+        if request.method == 'POST':
+            # Get the list of reservations the user wants deleted (storing the reservation IDs)
+            res = request.POST.getlist('res')
 
-        # Stores the number of checkboxes which were selected
-        numChecks = 0
-        # Stores the Reservation IDs that the user wants to remove
-        rem = []
-        # Stores the event IDs that need to get updated
-        updateEvents = []
-        # Counter to update the value of i
-        i = 0
+            # Refresh back to the edit page if no boxes were selected
+            if len(res) == 0:
+                Reservations = Reservation.objects.filter()
+                # Get the current user's information
+                username = request.user.get_username()
+                owner_ID = MyUser.objects.get(UserName=username)
+                # Get the number of reservations the current user has made
+                Count = Reservation.objects.filter(Owner_id=owner_ID.UserEmail).count()
+                context = {
+                    'Reservations': Reservations,
+                    'Count': Count,
+                }
+                messages.info(request, "You did make any edits to your reservations.")
+                return render(request, 'movies/edit_reservation.html', context=context)
 
-        # Get the number of checks which have been set
-        for c in range(len(checklist)):
-            # If a checkbox has been selected
-            if checklist[c] == 'on':
-                # Attach the relevant IDs to their appropriate lists
-                rem.append(resID[c])
-                updateEvents.append(eventID[c])
-                # Iterate number of checks and i
-                numChecks = numChecks + 1
-                i = i + 1
+            # Iterate through the provided reservation IDs
+            for Res in res:
+                # Get Reservation to remove
+                currentRes = Reservation.objects.get(ReservationId=Res)
+                # Get Event to update
+                currentEvent = Event.objects.get(EventId=currentRes.EventId_id)
 
-        # Refresh back to the edit page if no boxes were selected
-        if numChecks == 0:
+                # Need to update the Event with the new number of tickets available
+                currentEvent.AvailableTickets = currentEvent.AvailableTickets + currentRes.TicketsReserved
+                # Save the updated information for Event in the database
+                currentEvent.save()
+
+                # Need to delete the reservation
+                Reservation.objects.filter(ReservationId=Res).delete()
+
+            # Refresh the page for now ( need to figure out a way to allow the user to get refunded)
             Reservations = Reservation.objects.filter()
+            # Get the current user's information
+            username = request.user.get_username()
+            owner_ID = MyUser.objects.get(UserName=username)
+            # Get the number of reservations the current user has made
+            Count = Reservation.objects.filter(Owner_id=owner_ID.UserEmail).count()
             context = {
                 'Reservations': Reservations,
+                'Count': Count,
             }
             return render(request, 'movies/edit_reservation.html', context=context)
 
-        # Set counter to keep track of indexes
-        counter = 0
-        # Iterate through the remove array (contains Reservation IDs to remove)
-        for e in rem:
-            # Get Reservation to remove
-            currentRes = Reservation.objects.get(ReservationId=e)
-            # Get Event to update
-            currentEvent = Event.objects.get(EventId=updateEvents[counter])
-            counter = counter + 1
-
-            # Need to update the Event with the new number of tickets available
-            currentEvent.AvailableTickets = currentEvent.AvailableTickets + currentRes.TicketsReserved
-            # Save the updated information for Event in the database
-            currentEvent.save()
-
-            # Need to delete the reservation
-            Reservation.objects.filter(ReservationId=e).delete()
-
-        # Refresh the page for now ( need to figure out a way to allow the user to get refunded)
-        Reservations = Reservation.objects.filter()
-        context = {
-            'Reservations': Reservations,
-        }
-        return render(request, 'movies/edit_reservation.html', context=context)
-
-    # User must be logged into their account to add a reservation
+    # If user is not logged in
     else:
         messages.info(request, "You must login to create a purchase")
         return redirect('/login')
-
 
 def finish_payment(request):
     messages.info(request, "You have successfully purchased a ticket!\nCheck your email for confirmation!")
     return redirect('/#index')
 
+def about_us(request):
+    return render(request, 'movies/about_us.html')

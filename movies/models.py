@@ -16,6 +16,7 @@ class Movie(models.Model):
     MovieId = models.AutoField(primary_key=True)
     MovieName = models.CharField(max_length=100)
     MovieDuration = models.PositiveIntegerField()
+    MoviePic = models.TextField()
 
 
 class Event(models.Model):

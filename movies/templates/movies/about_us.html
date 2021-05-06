@@ -6,7 +6,7 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     {%  load static  %}
 
-    <title>Create Events</title>
+    <title>Add Reservation</title>
 
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,600,600i,700,700i" rel="stylesheet">
@@ -53,21 +53,14 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-6 pt-5 pt-lg-0 order-2 order-lg-1">
-                    <h1 style="color:tomato;font-size:150%;font-family:'Optima';">Create Event</h1>
-                    <form action="" method="POST">
-                        {% csrf_token %}
-                      <!-- Prints out messages -->
-                        {% if messages %}
-                            {% for message in messages%}
-                                <div class="alert alert-info alert-dismissible">
-                                    <a class="close" href="#" data-dismiss="alert" aria-label="close">&times;</a>
-                                    {{ message}}
-                                </div>
-                            {% endfor %}
-                        {% endif %}
-                        {{ form.as_p }}
-                        <input type="submit" name="submit" value="Submit"/>
-                    </form>
+                    <h1 style="color:tomato;font-size:150%;font-family:'Optima';">Welcome!</h1>
+                    <p>
+                        PopCorner is an interactive web application designed to provide you with access to an amazing movie experience! <br>
+                        We provide you with various locations for an amazing COVID safe experience promoted by local businesses in the area. <br>
+                        Enjoy your snacks! <br>
+                        Created By: Dona Thomas, Rhea Sirithara, Adam Hereth, Luke Faranetta and Swathi Krithivasan In Partnership With Kristin Sinclair
+
+                    </p>
                 </div>
             </div>
         </div>

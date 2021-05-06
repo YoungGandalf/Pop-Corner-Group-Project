@@ -15,6 +15,7 @@ urlpatterns = [
     path('edit_reservation/', views.edit_reservation, name='edit_reservation'),
     path('delete_reservation/', views.delete_reservation, name='delete_reservation'),
     path('finish_payment/', views.finish_payment, name='finish_payment'),
+    path('about_us/', views.about_us, name='about_us'),
 
     # URLS for resetting password
     path('password-reset/',
@@ -30,3 +31,4 @@ urlpatterns = [
          auth_views.PasswordResetCompleteView.as_view(template_name='password_recovery/password_reset_complete.html'),
          name='password_reset_complete')
 ]
+
