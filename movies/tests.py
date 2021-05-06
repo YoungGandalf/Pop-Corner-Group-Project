@@ -208,14 +208,17 @@ class EditReservationTestCase(TestCase):
         user = User.objects.create_user(username='testing', password='Testing123')
         self.client.login(username='testing', password='Testing123')
 
-    # Testing no checkbox which will redirect back to the same page
+    # Testing no checkbox which will redirect back to the same page and the reservation will still exist
     def test_delete_reservation(self):
         response = self.client.post(reverse('delete_reservation'),
-                                    data={'checkbox': 'off', 'ResID': '1', 'EventID': '1'})
+                                    data={'res': ''})
+        self.assertTrue(Reservation.objects.filter(ReservationId=1))
         self.assertEqual(response.status_code, 200)
 
-    # Testing a checkbox was selected will redirect back to the same page
+    # Testing a checkbox was selected will redirect back to the same page and delete the reservation
     def test_delete_reservation(self):
         response = self.client.post(reverse('delete_reservation'),
-                                    data={'checkbox': 'on', 'ResID': '1', 'EventID': '1'})
+                                    data={'res': '1'})
+        # Check the reservation does not exist in the database anymore
+        self.assertFalse(Reservation.objects.filter(ReservationId=1))
         self.assertEqual(response.status_code, 200)

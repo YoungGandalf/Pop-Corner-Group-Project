@@ -314,8 +314,10 @@ def edit_reservation(request):
     if request.user.is_authenticated:
 
         Reservations = Reservation.objects.filter()
+        # Get the current user's information
         username = request.user.get_username()
         owner_ID = MyUser.objects.get(UserName=username)
+        # Get the number of reservations the current user has made
         Count = Reservation.objects.filter(Owner_id=owner_ID.UserEmail).count()
         context = {
             'Reservations': Reservations,
@@ -333,14 +335,18 @@ def edit_reservation(request):
 def delete_reservation(request):
     # Check if user is logged in
     if request.user.is_authenticated:
+
         if request.method == 'POST':
+            # Get the list of reservations the user wants deleted (storing the reservation IDs)
             res = request.POST.getlist('res')
 
             # Refresh back to the edit page if no boxes were selected
             if len(res) == 0:
                 Reservations = Reservation.objects.filter()
+                # Get the current user's information
                 username = request.user.get_username()
                 owner_ID = MyUser.objects.get(UserName=username)
+                # Get the number of reservations the current user has made
                 Count = Reservation.objects.filter(Owner_id=owner_ID.UserEmail).count()
                 context = {
                     'Reservations': Reservations,
@@ -349,6 +355,7 @@ def delete_reservation(request):
                 messages.info(request, "You did make any edits to your reservations.")
                 return render(request, 'movies/edit_reservation.html', context=context)
 
+            # Iterate through the provided reservation IDs
             for Res in res:
                 # Get Reservation to remove
                 currentRes = Reservation.objects.get(ReservationId=Res)
@@ -365,8 +372,10 @@ def delete_reservation(request):
 
             # Refresh the page for now ( need to figure out a way to allow the user to get refunded)
             Reservations = Reservation.objects.filter()
+            # Get the current user's information
             username = request.user.get_username()
             owner_ID = MyUser.objects.get(UserName=username)
+            # Get the number of reservations the current user has made
             Count = Reservation.objects.filter(Owner_id=owner_ID.UserEmail).count()
             context = {
                 'Reservations': Reservations,
