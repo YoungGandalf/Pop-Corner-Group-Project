@@ -267,8 +267,16 @@ def add(request):
                 return render(request, 'movies/reservation.html', context)
             else:
                 # Clear the form and go to the payment page to proceed
-                form = ReservationForm(None)
-                return redirect('/payment')
+                if Payment.objects.filter(Owner_id=currentUser.UserEmail).exists():
+                    Payments = Payment.objects.filter(Owner_id=currentUser.UserEmail)
+                    context = {
+                        'Payments': Payments,
+                    }
+                    return render(request, 'movies/pick_payment.html', context=context)
+
+                else:
+                    form = ReservationForm(None)
+                    return redirect('/payment')
 
         # Else statement for invalid forms
         else:
@@ -408,3 +416,8 @@ def delete_reservation(request):
     else:
         messages.info(request, "You must login to create a purchase")
         return redirect('/login')
+
+
+def finish_payment(request):
+    return redirect('/reservation')
+
