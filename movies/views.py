@@ -291,7 +291,6 @@ def add(request):
                 return render(request, 'movies/pick_payment.html', context=context)
             # If no credit cards exist then go to the payment page
             else:
-                form = ReservationForm(None)
                 return redirect('/payment')
 
     # User must be logged into their account to add a reservation
