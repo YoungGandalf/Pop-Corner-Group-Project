@@ -23,6 +23,7 @@
 </head>
 
 <body>
+
     <!-- ======= Header ======= -->
     <header id="header" class="fixed-top">
         <div class="container-fluid d-flex">
@@ -56,10 +57,15 @@
                     <h1 style="color:tomato;font-size:150%;font-family:'Optima';">Payment Info</h1>
                     <form action="" method="POST">
                         {% csrf_token %}
-                        <! -- Print out errors before the textbox on the form -->
-                        {% if error %}
-                            {{ error }}
-                        {% endif %}
+                        <!-- Prints out messages -->
+                        {% if messages %}
+                            {% for message in messages%}
+                                <div class="alert alert-info alert-dismissible">
+                                    <a class="close" href="#" data-dismiss="alert" aria-label="close">&times;</a>
+                                    {{message}}
+                                </div>
+                             {% endfor %}
+                         {% endif %}
                         <! -- Print out each textbox in the form -->
                         {{ form.as_p }}
                         <input type="submit" name="submit" value="Add Payment"/>
