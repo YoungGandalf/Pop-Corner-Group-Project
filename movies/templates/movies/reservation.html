@@ -57,16 +57,14 @@
                     <p>
                         Here are possible movies to watch with the associating dates and times:
                     <ol>
-                    {% if messages %}
-                        <ul class="messages">
-                            {% for message in messages %}
-                                <li  {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </li>
+                    <!-- Prints out messages -->
+                        {% if messages %}
+                            {% for message in messages%}
+                                <div class="alert alert-info">
+                                    {{ message}}
+                                </div>
                             {% endfor %}
-                        </ul>
-                    {% endif %}
-                    {% if error %}
-                        {{ error }}
-                    {% endif %}
+                        {% endif %}
                     <form action="/add/" method="POST">
                         {% for Event in Events %}
                             {% if Event.AvailableTickets > 0 %}
