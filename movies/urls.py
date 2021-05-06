@@ -14,6 +14,7 @@ urlpatterns = [
     path('event/', views.event_form, name='event'),
     path('edit_reservation/', views.edit_reservation, name='edit_reservation'),
     path('delete_reservation/', views.delete_reservation, name='delete_reservation'),
+    path('about_us/', views.about_us, name='about_us'),
 
     # URLS for resetting password
     path('password-reset/',

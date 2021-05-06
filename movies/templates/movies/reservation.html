@@ -33,7 +33,7 @@
             <nav class="nav-menu d-none d-lg-block">
                 <ul>
                     <li class="active"><a href="/#index">Home</a></li>
-                    <li><a href="">About Us</a></li>
+                    <li><a href="/about_us">About Us</a></li>
                     <li><a href="/reservation">Movies</a></li>
                     <li><a href="/map">Location</a></li>
                     <li><a href="/payment">Checkout</a></li>
@@ -84,6 +84,7 @@
                                             <!-- Ask User for the number of tickets (default is 0)-->
                                             How many tickets would you like to buy?
                                             <input type="integer" name="tickets" id="tickets.id" value = 0><br/>
+                                            <!--<input type="number" name="tickets" id="tickets.id" min="0" max = "{{ Event.AvailableTickets }}"><br/>-->
                                             <!-- Store the current Event ID -->
                                             <input type="hidden" value={{ Event.EventId }} name=tempId id="temp.id" readonly><br>
 

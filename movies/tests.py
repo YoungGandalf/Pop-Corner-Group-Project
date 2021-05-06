@@ -126,18 +126,7 @@ class ReservationTestCase(TestCase):
         user = User.objects.create_user(username='testing', password='Testing123')
         self.client.login(username='testing', password='Testing123')
 
-    # Test the ReservationForm works for valid information
-    def test_ReservationForm_valid(self):
-        form = ReservationForm(data={'TicketsReserved': '2', 'temp': '1'})
-        self.assertTrue(form.is_valid())
-
-    # Test the ReservationForm works for invalid information
-    def test_ReservationForm_invalid(self):
-        # User can't enter a non negative ticket number
-        form = ReservationForm(data={'TicketsReserved': '-1', 'temp': '1'})
-        self.assertFalse(form.is_valid())
-
-    # Testing User View with Valid Data (Should refresh back to the same page with a cleared form)
+    # Testing User View with Valid Data (Should head to the appropriate payment page, check!!!!)
     def test_add_valid_reservation_view(self):
         # Valid Data
         response = self.client.post(reverse('reservation'),
@@ -148,9 +137,8 @@ class ReservationTestCase(TestCase):
     def test_add_invalid_reservation_view(self):
         # Invalid data fails.
         response = self.client.post(reverse('reservation'),
-                                    data={'tickets': '-15', 'tempID': '1'})
+                                    data={'tickets': '-15', 'tempID': '1'},follow=True)
         self.assertEqual(response.status_code, 200)
-
 
 # Tests for Event Form
 class EventTestCases(TestCase):

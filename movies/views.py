@@ -207,77 +207,61 @@ def add(request):
                 }
                 return render(request, 'movies/reservation.html', context)
 
-        # Place information into the form and authenticate
-        form = ReservationForm(data={'TicketsReserved': 0, 'temp': 0})
+        # Grab current users email for foreign key in Reservation object creation,
+        username = request.user.get_username()
+        currentUser = MyUser.objects.get(UserName=username)
 
-        # Check if form is valid
-        if form.is_valid():
+        # Set counter to keep track of indexes
+        counter = 0
+        # Iterate through the eventID array
+        for e in eventID:
 
-            # Grab current users email for foreign key in Reservation object creation,
-            username = request.user.get_username()
-            currentUser = MyUser.objects.get(UserName=username)
+            # Get Event associated with the tempID
+            currentEvent = Event.objects.get(EventId=e)
 
-            # Set counter to keep track of indexes
-            counter = 0
-            # Iterate through the eventID array
-            for e in eventID:
+            # Need to update the Event with the current number of tickets available
+            currentEvent.AvailableTickets = currentEvent.AvailableTickets - int(numTickets[counter])
 
-                # Get Event associated with the tempID
-                currentEvent = Event.objects.get(EventId=e)
-
-                # Need to update the Event with the current number of tickets available
-                currentEvent.AvailableTickets = currentEvent.AvailableTickets - int(numTickets[counter])
-
-                # Make sure the ticket number entered was valid
-                if currentEvent.AvailableTickets < 0:
-                    # If it failed then reprompt the user for another input
-                    messages.error(request, "The number of tickets you reserved must be less than this input")
-                    Events = Event.objects.filter()
-                    context = {
-                        'Events': Events,
-                    }
-                    return render(request, 'movies/reservation.html', context)
-
-                # Save the updated information for Event in the database
-                currentEvent.save()
-
-                # If the reservation already exists then just add to the reservation (filter by event id and owner)
-                if Reservation.objects.filter(EventId_id=currentEvent.EventId).filter(Owner=currentUser).exists():
-                    reservation = Reservation.objects.get(EventId_id=currentEvent.EventId, Owner=currentUser)
-                    reservation.TicketsReserved = reservation.TicketsReserved + int(numTickets[counter])
-                else:
-                    # Create new reservation object and save it with the appropriate information
-                    reservation = Reservation(Owner_id=currentUser.UserEmail,
-                                              EventId_id=currentEvent.EventId,
-                                              TicketsReserved=int(numTickets[counter]))
-
-                # If the current number of ticket is not equal to 0 then save the reservation
-                if int(numTickets[counter]) != 0:
-                    # Save the updated reservation in the database
-                    reservation.save()
-                counter = counter + 1  # Iterate counter
-
-            # If for some reason there are no entries (full of 0s) then just reprompt to the reservation page
-            if isZeros:
-                # Reload page if form is not valid
+            # Make sure the ticket number entered was valid
+            if currentEvent.AvailableTickets < 0:
+                # If it failed then reprompt the user for another input
+                messages.error(request, "The number of tickets you reserved must be less than this input")
                 Events = Event.objects.filter()
                 context = {
                     'Events': Events,
                 }
                 return render(request, 'movies/reservation.html', context)
-            else:
-                # Clear the form and go to the payment page to proceed
-                form = ReservationForm(None)
-                return redirect('/payment')
 
-        # Else statement for invalid forms
-        else:
+            # Save the updated information for Event in the database
+            currentEvent.save()
+
+            # If the reservation already exists then just add to the reservation (filter by event id and owner)
+            if Reservation.objects.filter(EventId_id=currentEvent.EventId).filter(Owner=currentUser).exists():
+                reservation = Reservation.objects.get(EventId_id=currentEvent.EventId, Owner=currentUser)
+                reservation.TicketsReserved = reservation.TicketsReserved + int(numTickets[counter])
+            else:
+                # Create new reservation object and save it with the appropriate information
+                reservation = Reservation(Owner_id=currentUser.UserEmail,
+                                          EventId_id=currentEvent.EventId,
+                                          TicketsReserved=int(numTickets[counter]))
+
+            # If the current number of ticket is not equal to 0 then save the reservation
+            if int(numTickets[counter]) != 0:
+                # Save the updated reservation in the database
+                reservation.save()
+            counter = counter + 1  # Iterate counter
+
+        # If for some reason there are no entries (full of 0s) then just reprompt to the reservation page
+        if isZeros:
             # Reload page if form is not valid
             Events = Event.objects.filter()
             context = {
                 'Events': Events,
             }
             return render(request, 'movies/reservation.html', context)
+        else:
+            # Go to the payment page to proceed
+            return redirect('/payment')
 
     # User must be logged into their account to add a reservation
     else:
@@ -408,3 +392,7 @@ def delete_reservation(request):
     else:
         messages.info(request, "You must login to create a purchase")
         return redirect('/login')
+
+
+def about_us(request):
+    return render(request, 'movies/about_us.html')

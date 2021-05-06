@@ -6,7 +6,7 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     {%  load static  %}
 
-    <title>Login</title>
+    <title>Add Reservation</title>
 
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,600,600i,700,700i" rel="stylesheet">
@@ -22,7 +22,6 @@
     <link rel="stylesheet" href="{% static 'css/all.css' %}" type="text/css">
 </head>
 
-<!-- Sorts out the formatting of the header -->
 <body>
     <!-- ======= Header ======= -->
     <header id="header" class="fixed-top">
@@ -54,28 +53,11 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-6 pt-5 pt-lg-0 order-2 order-lg-1">
-                    <h1 style="color:tomato;font-size:150%;font-family:'Optima';">Login</h1>
-                    <!-- End of formatting -->
-                    <!-- Creating the Login Form -->
-                    <form action="/login/" method="post">
-                        {% csrf_token %}
-                        <!-- Prints out messages -->
-                        {% if messages %}
-                            <ul class="messages">
-                                {% for message in messages %}
-                                    <li  {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </li>
-                                {% endfor %}
-                            </ul>
-                        {% endif %}
-                        <!-- Login Form Blanks -->
-                        Enter your username: <br/>
-                        <input type="text" name="Username"><br/>
-                        Enter your password: <br/>
-                        <input type="password" name="Password"><br/>
-                        <input type="submit">
-                    </form> <br>
-                    If you don't already have an account, <a href = "/signup" style="color: tomato"> Create an Account</a> <br>
-                    If you can't remember your password, <a href = "/password-reset/" style="color: tomato"> Forgot Password</a>
+                    <h1 style="color:tomato;font-size:150%;font-family:'Optima';">Welcome!</h1>
+                    <p>
+                        PopCorner is an interactive web application designed to provide you with an amazing movie experience.
+
+                    </p>
                 </div>
             </div>
         </div>

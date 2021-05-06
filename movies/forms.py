@@ -33,17 +33,6 @@ class PaymentForm(ModelForm):
         fields = ["CardNumber", "ExpDate", "SecCode", "Address", "ZipCode"]
 
 
-# Form created for adding reservation information: Contains all relevant fields, widgets set for specific inputs,
-# and labels
-class ReservationForm(ModelForm):
-    TicketsReserved = forms.IntegerField(widget=TextInput, label='Tickets Reserved')
-    temp = forms.IntegerField(widget=TextInput, label='temp')  # Temporary input to hold the current event ID
-
-    class Meta:
-        model = Reservation
-        fields = ["TicketsReserved", "temp"]
-
-
 class EventForm(ModelForm):
     # EventId = forms.AutoField(max_length=100, label='EventID')
     # BusinessOwner = forms.ForeignKey(MyUser, on_delete=models.CASCADE)
