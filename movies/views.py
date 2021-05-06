@@ -431,9 +431,26 @@ def delete_reservation(request):
         messages.info(request, "You must login to create a purchase")
         return redirect('/login')
 
+
 def finish_payment(request):
     messages.info(request, "You have successfully purchased a ticket!\nCheck your email for confirmation!")
     return redirect('/#index')
 
+
 def about_us(request):
     return render(request, 'movies/about_us.html')
+
+
+def movies(request):
+    Movies = Movie.objects.filter()
+    if request.user.is_authenticated:
+        username = request.user.get_username()
+        owner_ID = MyUser.objects.get(UserName=username)
+        IsBusiness = owner_ID.IsBusiness
+    else:
+        IsBusiness = 0
+    context = {
+        'Movies': Movies,
+        'IsBusiness':IsBusiness,
+    }
+    return render(request, 'movies/movies.html', context=context)
