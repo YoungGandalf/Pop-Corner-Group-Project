@@ -443,6 +443,7 @@ def about_us(request):
 
 def movies(request):
     Movies = Movie.objects.filter()
+    numMovies = Movie.objects.filter().count()
     if request.user.is_authenticated:
         username = request.user.get_username()
         owner_ID = MyUser.objects.get(UserName=username)
@@ -451,6 +452,7 @@ def movies(request):
         IsBusiness = 0
     context = {
         'Movies': Movies,
-        'IsBusiness':IsBusiness,
+        'numMovies': numMovies,
+        'IsBusiness': IsBusiness,
     }
     return render(request, 'movies/movies.html', context=context)

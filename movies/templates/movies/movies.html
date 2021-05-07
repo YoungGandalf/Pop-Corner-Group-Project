@@ -1,3 +1,4 @@
+html
 <!DOCTYPE html>
 <html lang="en">
 
@@ -20,9 +21,13 @@
 
     <!-- Template CSS Files -->
     <link rel="stylesheet" href="{% static 'css/all.css' %}" type="text/css">
+    {% load static %}
+    <link rel="stylesheet" href="{% static "/css/flickity.css" %}" />
 </head>
 
 <body>
+    <script src="{% static "/js/flickity.pkgd.min.js" %}"></script>
+
     <!-- ======= Header ======= -->
     <header id="header" class="fixed-top">
         <div class="container-fluid d-flex">
@@ -55,7 +60,6 @@
                 <div class="col-lg-6 pt-5 pt-lg-0 order-2 order-lg-1">
                     <h1 style="color:tomato;font-size:150%;font-family:'Optima';">Movies</h1>
                     <p>
-                        Here are possible movies to watch:
                         <ol>
 
                             {% if messages %}
@@ -69,15 +73,25 @@
                                 {{ error }}
                             {% endif %}
 
+
+                            <!-- Flickity HTML init -->
+                            <div class="carousel"
+                                data-flickity='{ "lazyLoad": true,"wrapAround": true,"groupCells":true, "draggable":true }'>
+
                                 {% for Movie in Movies %}
                                     {% csrf_token %}
-                                     <!-- Print out Relevant Information for the Movie-->
-                                    <li> <img src="{{Movie.MoviePic}}"/ height="150px"> <br/>
-                                        Movie Name: {{ Movie.MovieName }}  <br></li>
+
+
+                                    <div class="carousel-cell">
+                                        <img class="carousel-cell-image" data-flickity-lazyload="{{Movie.MoviePic}}" alt="{{Movie.MoviePic}}" />
+                                    </div>
+
+
                                 {% endfor %}
+                            </div>
                         </ol>
                     </p>
-                    If you would like to create a reservation, <a href = "/reservation"><strong>Reservation</strong></a>.<br/>
+                    <br>If you would like to create a reservation, <a href = "/reservation"><strong>Reservation</strong></a>.<br/>
                     {% if user.is_authenticated %}
                         {% if IsBusiness %}
                             If you would like to create an event, <a href = "/event"><strong>Event</strong></a>.
@@ -85,8 +99,11 @@
                     {% endif %}
                 </div>
             </div>
-        </div>
+	</div>
     </section>
 </body>
 
 </html>
+
+
+
