@@ -6,7 +6,7 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     {%  load static  %}
 
-    <title>Map</title>
+    <title>Add Reservation</title>
 
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,600,600i,700,700i" rel="stylesheet">
@@ -19,7 +19,6 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/3.0.0-beta.6/aos.css" rel="stylesheet">
 
     <!-- Template CSS Files -->
-    <link rel="stylesheet" href="{% static 'css/style.css' %}" type="text/css">
     <link rel="stylesheet" href="{% static 'css/all.css' %}" type="text/css">
 </head>
 
@@ -49,14 +48,23 @@
         </div>
     </header>
 
-    <div id="map">
+    <!-- ======= Hero Section ======= -->
+    <section id="hero" class="d-flex align-items-center">
         <div class="container">
-        <script type="text/javascript" src="{% static 'js/module.js' %}"></script>
-            <script
-                    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDUYrj8-4B0zXsqYGGfzw28WnDGc7l8Wcs&callback=initMap&libraries=&v=weekly"
-                    async></script>
+            <div class="row">
+                <div class="col-lg-6 pt-5 pt-lg-0 order-2 order-lg-1">
+                    <h1 style="color:tomato;font-size:150%;font-family:'Optima';">Welcome!</h1>
+                    <p>
+                        PopCorner is an interactive web application designed to provide you with access to an amazing movie experience! <br>
+                        We provide you with various locations for an amazing COVID safe experience promoted by local businesses in the area. <br>
+                        Enjoy your snacks! <br>
+                        Created By: Dona Thomas, Rhea Sirithara, Adam Hereth, Luke Faranetta and Swathi Krithivasan In Partnership With Kristin Sinclair
+
+                    </p>
+                </div>
+            </div>
         </div>
-    </div>
+    </section>
 </body>
 
 </html>
