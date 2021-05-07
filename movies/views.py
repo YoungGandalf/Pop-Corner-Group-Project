@@ -145,10 +145,29 @@ def reservation(request):
     if request.user.is_authenticated:
 
         Events = Event.objects.filter()
-        Count = Event.objects.filter().count()
+
+        # Get number of event elements
+        temp = Event.objects.filter().count()
+        Count = 0
+        # If there are no event objects then count will be 0
+        if temp == 0:
+            Count = 0
+        # Else there are event objects
+        else:
+            # Iterate through the events and make sure there are Available Tickets
+            for e in Events:
+                if e.AvailableTickets != 0:
+                    Count = Count + 1
+
+        # Check if the owner is a business
+        username = request.user.get_username()
+        owner_ID = MyUser.objects.get(UserName=username)
+        IsBusiness = owner_ID.IsBusiness
+
         context = {
             'Events': Events,
             'Count': Count,
+            'IsBusiness': IsBusiness,
         }
         return render(request, 'movies/reservation.html', context=context)
 
@@ -182,8 +201,29 @@ def add(request):
             messages.error(request,
                            "The number of tickets you entered contains characters. Please only include integers.")
             Events = Event.objects.filter()
+
+            # Get number of event elements
+            temp = Event.objects.filter().count()
+            Count = 0
+            # If there are no event objects then count will be 0
+            if temp == 0:
+                Count = 0
+            # Else there are event objects
+            else:
+                # Iterate through the events and make sure there are Available Tickets
+                for e in Events:
+                    if e.AvailableTickets != 0:
+                        Count = Count + 1
+
+                        # Check if the owner is a business
+            username = request.user.get_username()
+            owner_ID = MyUser.objects.get(UserName=username)
+            IsBusiness = owner_ID.IsBusiness
+
             context = {
                 'Events': Events,
+                'Count': Count,
+                'IsBusiness': IsBusiness,
             }
             return render(request, 'movies/reservation.html', context)
 
@@ -208,8 +248,29 @@ def add(request):
                 # If it failed then reprompt the user for another input
                 messages.error(request, "The number of tickets you reserve must be a positive integer")
                 Events = Event.objects.filter()
+
+                # Get number of event elements
+                temp = Event.objects.filter().count()
+                Count = 0
+                # If there are no event objects then count will be 0
+                if temp == 0:
+                    Count = 0
+                # Else there are event objects
+                else:
+                    # Iterate through the events and make sure there are Available Tickets
+                    for e in Events:
+                        if e.AvailableTickets != 0:
+                            Count = Count + 1
+
+                            # Check if the owner is a business
+                username = request.user.get_username()
+                owner_ID = MyUser.objects.get(UserName=username)
+                IsBusiness = owner_ID.IsBusiness
+
                 context = {
                     'Events': Events,
+                    'Count': Count,
+                    'IsBusiness': IsBusiness,
                 }
                 return render(request, 'movies/reservation.html', context)
 
@@ -233,8 +294,29 @@ def add(request):
                 # If it failed then reprompt the user for another input
                 messages.error(request, "The number of tickets you reserved must be less than this input")
                 Events = Event.objects.filter()
+
+                # Get number of event elements
+                temp = Event.objects.filter().count()
+                Count = 0
+                # If there are no event objects then count will be 0
+                if temp == 0:
+                    Count = 0
+                # Else there are event objects
+                else:
+                    # Iterate through the events and make sure there are Available Tickets
+                    for e in Events:
+                        if e.AvailableTickets != 0:
+                            Count = Count + 1
+
+                            # Check if the owner is a business
+                username = request.user.get_username()
+                owner_ID = MyUser.objects.get(UserName=username)
+                IsBusiness = owner_ID.IsBusiness
+
                 context = {
                     'Events': Events,
+                    'Count': Count,
+                    'IsBusiness': IsBusiness,
                 }
                 return render(request, 'movies/reservation.html', context)
 
@@ -276,8 +358,29 @@ def add(request):
         if isZeros:
             # Reload page if form is not valid
             Events = Event.objects.filter()
+
+            # Get number of event elements
+            temp = Event.objects.filter().count()
+            Count = 0
+            # If there are no event objects then count will be 0
+            if temp == 0:
+                Count = 0
+            # Else there are event objects
+            else:
+                # Iterate through the events and make sure there are Available Tickets
+                for e in Events:
+                    if e.AvailableTickets != 0:
+                        Count = Count + 1
+
+                        # Check if the owner is a business
+            username = request.user.get_username()
+            owner_ID = MyUser.objects.get(UserName=username)
+            IsBusiness = owner_ID.IsBusiness
+
             context = {
                 'Events': Events,
+                'Count': Count,
+                'IsBusiness': IsBusiness,
             }
             return render(request, 'movies/reservation.html', context)
         # Clear the form and go to the payment page to proceed

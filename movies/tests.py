@@ -2,6 +2,10 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 from django.contrib.auth.tokens import default_token_generator
 import base64
+from django.core import mail
+from django.conf import settings
+from django.template.loader import render_to_string
+
 
 from .forms import *
 from django.test import TestCase, Client
@@ -126,12 +130,11 @@ class ReservationTestCase(TestCase):
         user = User.objects.create_user(username='testing', password='Testing123')
         self.client.login(username='testing', password='Testing123')
 
-    # Testing User View with Valid Data (Should head to the appropriate payment page, check!!!!)
+    # Testing User View with Valid Data (Should head to the default payment page since nothing was setup)
     def test_add_valid_reservation_view(self):
         # Valid Data
-        response = self.client.post(reverse('reservation'),
-                                    data={'tickets': '2', 'tempID': '1'})
-        self.assertEqual(response.status_code, 200)
+        response = self.client.post(reverse('add'), {'tickets': '2', 'tempID': '1'}, follow=True)
+        self.assertRedirects(response, reverse('payment'), status_code=302)
 
     # Testing User View with Invalid Data (Should refresh back to the same page)
     def test_add_invalid_reservation_view(self):
@@ -222,6 +225,10 @@ class EditReservationTestCase(TestCase):
                                     data={'res': '1'})
         # Check the reservation does not exist in the database anymore
         self.assertFalse(Reservation.objects.filter(ReservationId=1))
+        # Check the tickets available were updated in the database in the event model
+        checkEvent = Event.objects.get(EventId=1)
+        self.assertEqual(checkEvent.AvailableTickets, 10)
+        # Check that we were redirected to the same page
         self.assertEqual(response.status_code, 200)
 
 
