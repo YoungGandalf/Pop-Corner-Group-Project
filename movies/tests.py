@@ -144,26 +144,42 @@ class ReservationTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
 
 
-# Tests for Event Form
-class EventTestCases(TestCase):
-    def test_EventTestCases_valid(self):
-        MyUser.objects.create(UserEmail="ownertest1@gmail.com", UserPassword="Owner1", UserName="ownertest1",
-                              UserPhoneNumber="123-456-7899", IsBusiness=True)
-        Movie.objects.create(MovieName="TestMovie", MovieDuration="60")
-        form = EventForm(data={'EventAddress': "123", 'AvailableTickets': '90',
-                               'TotalTickets': '100', 'EventDate': "2021-10-25",
-                               'EventWebsite': "www.johndoe.com"})
+# Tests for creating a reservation
+class EventTestCases1(TestCase):
+    # Need to initialize a user that is logged in, an owner (MyUser) who owns the event, a movie and possible
+    def setUp(self):
+        testOwner = MyUser(UserEmail="owner@gmail.com", UserPassword="Owner123", UserName="owner",
+                           UserPhoneNumber="123-456-7890", IsBusiness=True)
+        testOwner.save()
+        testUser = MyUser(UserEmail="testing@gmail.com", UserPassword="Testing123", UserName="testing",
+                          UserPhoneNumber="123-456-7890", IsBusiness=False)
+        testUser.save()
+        testMovie = Movie(MovieName="TestMovie", MovieDuration="60",MoviePic="https://m.media-amazon.com/images/I/71liEu4AGtL._AC_.jpg")
+        testMovie.save()
 
-        self.assertTrue(form.is_valid())
+        user = User.objects.create_user(username='owner', password='Owner123')
+        self.client.login(username='owner', password='Owner123')
 
-    def test_EventTestCases_invalid(self):
-        MyUser.objects.create(UserEmail="ownertest2@gmail.com", UserPassword="Owner2", UserName="ownertest2",
-                              UserPhoneNumber="123-456-7895", IsBusiness=True)
-        Movie.objects.create(MovieName="TestMovie", MovieDuration="60")
-        form = EventForm(data={'Owner_id': "ownertest1@gmail.com", 'EventAddress': "", 'AvailableTickets': "",
-                               'TotalTickets': "", 'EventDate': "", 'MovieId_id': "2",
-                               'EventWebsite': ""})
-        self.assertFalse(form.is_valid())
+    # Testing Invalid Input for Event
+    def test_InValid_Event_NotAdded(self):
+        count = Event.objects.filter().count()
+        response = self.client.post(reverse('add_event'),
+                                    data={'movie': '1','EventAddress':'1234 Testing Street','TotalTickets':'a',
+                                          'EventDate':'2021-10-25T02:04','EventWebsite':'https://www.JohnDoe.com'})
+        # Make sure nothing is added to the database
+        self.assertFalse(Event.objects.filter().count(),count+1)
+        # redirects back to the same page
+        self.assertEqual(response.status_code, 200)
+
+    # Testing Valid Input for Event
+    def test_Valid_Event_Added(self):
+        response = self.client.post(reverse('add_event'),
+                                    data={'movie': '1','EventAddress':'1234 Testing Street','TotalTickets':'10',
+                                          'EventDate':'2021-10-25T02:04','EventWebsite':'https://www.JohnDoe.com'})
+        # Make sure something got added to the database
+        self.assertTrue(Event.objects.filter().count(),1)
+        # redirects back to the same page
+        self.assertEqual(response.status_code, 200)
 
 
 # Tests for Password Reset
@@ -213,9 +229,9 @@ class EditReservationTestCase(TestCase):
         self.client.login(username='testing', password='Testing123')
 
     # Testing no checkbox which will redirect back to the same page and the reservation will still exist
-    def test_delete_reservation(self):
+    def test_no_delete_reservation(self):
         response = self.client.post(reverse('delete_reservation'),
-                                    data={'res': ''})
+                                    data=None)
         self.assertTrue(Reservation.objects.filter(ReservationId=1))
         self.assertEqual(response.status_code, 200)
 
