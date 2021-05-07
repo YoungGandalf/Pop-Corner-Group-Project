@@ -102,6 +102,9 @@
                         {% endif %}
                     </p>
                     If you would like to view your current reservations, <a href = "/edit_reservation"><strong>View Reservations</strong></a>.
+                    {% if IsBusiness %}
+                        If you would like to create an event, <a href = "/event"><strong>Event</strong></a>.
+                    {% endif %}
                 </div>
             </div>
         </div>
