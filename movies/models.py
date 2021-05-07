@@ -1,8 +1,6 @@
 from django.db import models
 # Validators: Validate the fields
 from .validators import *
-from django.core.validators import MinValueValidator
-from datetime import date
 
 
 class MyUser(models.Model):
@@ -26,11 +24,9 @@ class Event(models.Model):
     Owner = models.ForeignKey('MyUser', on_delete=models.CASCADE)
     # Validate Address Syntax using Regex?
     EventAddress = models.CharField(max_length=100)
-    # Need to make sure available tickets is not greater than total tickets
     AvailableTickets = models.IntegerField()
     TotalTickets = models.IntegerField()
-    # Validate Date Time using Regex?
-    EventDate = models.DateTimeField(validators=[MinValueValidator(limit_value=date.today)])
+    EventDate = models.DateTimeField()
     MovieId = models.ForeignKey('Movie', on_delete=models.CASCADE)
     EventWebsite = models.URLField(max_length=100)
 

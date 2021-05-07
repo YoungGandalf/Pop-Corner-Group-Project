@@ -84,13 +84,14 @@
                                             <li> <img src="{{Movie.MoviePic}}"/ height="150px"> <br/>
                                                 Movie Name: {{ Movie.MovieName }}  <br>
                                                 Would you like to choose this movie?
-                                                    <!-- Store the current Reservation ID inside the checkbox -->
+                                                    <!-- Store the current Movie ID inside the checkbox -->
                                                      <div class="form-check">
                                                         <input class="form-check-input" type="checkbox" value={{Movie.MovieId}} id="MovieID.id" name="movie">
                                                         <label class="form-check-label" for="MovieID.id"></label>
                                                     </div>
                                         {% endfor %}
 
+                                        <!-- Prompt the user for appropriate event information -->
                                         <pre>Address of Event    <input type="text" name="EventAddress" required></pre>
                                         <pre>Total Tickets            <input type="integer" name="TotalTickets" required></pre>
                                         <pre>Event Date & Time <input type="datetime-local" name="EventDate" required></pre>

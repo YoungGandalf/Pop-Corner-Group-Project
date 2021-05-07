@@ -13,7 +13,8 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
 from .models import *
 
-from datetime import date
+from datetime import date, datetime
+
 
 def index(request):
     return render(request, 'movies/index.html')
@@ -492,29 +493,31 @@ def add_event(request):
                     return render(request, 'movies/event.html', context)
 
                 # Validate Date is in the Future
-                # today = date.today()
-                # if eventDate < today:
-                #     Movies = Movie.objects.filter()
-                #     numMovies = Movie.objects.filter().count()
-                #     context = {
-                #         'Movies': Movies,
-                #         'numMovies': numMovies,
-                #     }
-                #     messages.error(request, "The event date must be in the future")
-                #     return render(request, 'movies/event.html', context)
+                today = datetime.today()
+                date_time_obj = datetime.strptime(eventDate, '%Y-%m-%dT%H:%M')
+                if date_time_obj < today:
+                    Movies = Movie.objects.filter()
+                    numMovies = Movie.objects.filter().count()
+                    context = {
+                        'Movies': Movies,
+                        'numMovies': numMovies,
+                    }
+                    messages.error(request, "The event date must be in the future")
+                    return render(request, 'movies/event.html', context)
 
                 # Passed validation so save information into the event database
-                print(movie)
+
                 e = Event(Owner_id=currentUser.UserEmail, EventAddress=address, AvailableTickets=totalTickets,
                           TotalTickets=totalTickets, EventDate=eventDate, MovieId_id=movie, EventWebsite=website)
                 e.save()
+
                 Movies = Movie.objects.filter()
                 numMovies = Movie.objects.filter().count()
                 context = {
                     'Movies': Movies,
                     'numMovies': numMovies,
                 }
-                messages.error(request, "You have added an event!")
+                messages.info(request, "You have added an event!")
                 return render(request, 'movies/event.html', context)
 
             else:
