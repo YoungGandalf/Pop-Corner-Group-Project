@@ -73,22 +73,25 @@ html
                                 {{ error }}
                             {% endif %}
 
+                            {% if numMovies != 0 %}
+                                <!-- Flickity HTML init -->
+                                <div class="carousel"
+                                    data-flickity='{ "lazyLoad": true,"wrapAround": true,"groupCells":true, "draggable":true }'>
 
-                            <!-- Flickity HTML init -->
-                            <div class="carousel"
-                                data-flickity='{ "lazyLoad": true,"wrapAround": true,"groupCells":true, "draggable":true }'>
-
-                                {% for Movie in Movies %}
-                                    {% csrf_token %}
-
-
-                                    <div class="carousel-cell">
-                                        <img class="carousel-cell-image" data-flickity-lazyload="{{Movie.MoviePic}}" alt="{{Movie.MoviePic}}" />
-                                    </div>
+                                    {% for Movie in Movies %}
+                                        {% csrf_token %}
 
 
-                                {% endfor %}
-                            </div>
+                                        <div class="carousel-cell">
+                                            <img class="carousel-cell-image" data-flickity-lazyload="{{Movie.MoviePic}}" alt="{{Movie.MoviePic}}" />
+                                        </div>
+
+
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                There are no movies to display. <br/>
+                            {% endif %}
                         </ol>
                     </p>
                     <br>If you would like to create a reservation, <a href = "/reservation"><strong>Reservation</strong></a>.<br/>

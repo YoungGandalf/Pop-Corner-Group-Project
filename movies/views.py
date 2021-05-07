@@ -545,12 +545,29 @@ def about_us(request):
 
 
 def movies(request):
-    Movies = Movie.objects.filter()
+
+    # Get the number of movie objects which exist
     numMovies = Movie.objects.filter().count()
+    if numMovies == 0:
+        # Create Movie Objects (manually created by the programmer)
+        m = Movie(MovieName="Aladdin", MovieDuration=128,
+                  MoviePic="https://m.media-amazon.com/images/I/71liEu4AGtL._AC_.jpg")
+        m.save()
+        m = Movie(MovieName="Frozen", MovieDuration=109,
+                  MoviePic="https://images-na.ssl-images-amazon.com/images/I/714arK1ZtCL._AC_SY741_.jpg")
+        m.save()
+        m = Movie(MovieName="The Lion King", MovieDuration=118,
+                  MoviePic="https://cdn11.bigcommerce.com/s-yshlhd/images/stencil/1280x1280/products/6864/157221/full.thelionking-19773__42835.1556888193.jpg?c=2?imbypass=on")
+        m.save()
+
+    Movies = Movie.objects.filter()
+    # Check the user is logged in
     if request.user.is_authenticated:
         username = request.user.get_username()
         owner_ID = MyUser.objects.get(UserName=username)
+        # Get if the user is a business
         IsBusiness = owner_ID.IsBusiness
+    # If they are not logged in then set it to 0
     else:
         IsBusiness = 0
     context = {
