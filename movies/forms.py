@@ -31,38 +31,3 @@ class PaymentForm(ModelForm):
     class Meta:
         model = Payment
         fields = ["CardNumber", "ExpDate", "SecCode", "Address", "ZipCode"]
-
-
-class EventForm(ModelForm):
-    # EventId = forms.AutoField(max_length=100, label='EventID')
-    # BusinessOwner = forms.ForeignKey(MyUser, on_delete=models.CASCADE)
-    EventAddress = forms.CharField(widget=TextInput, max_length=100, label='Address of Event')
-    # can place auto increment to decrement when bought
-    # AvailableTickets should be set to be the same as TotalTickets
-    AvailableTickets = forms.IntegerField(widget=NumberInput, label="Tickets Available")
-    TotalTickets = forms.IntegerField(widget=NumberInput, label="Total Tickets")
-    EventDate = forms.DateTimeField(widget=DateTimeInput, label="Event Date")
-    # what movie to watch. So movies name/selection
-    # MovieId = models.ForeignKey(Movie, on_delete=models.CASCADE)
-    EventWebsite = forms.URLField(widget=URLInput, max_length=100, label='Website Url')
-
-    class Meta:
-        model = Event
-        fields = ["EventAddress", "AvailableTickets", "TotalTickets", "EventDate", "EventWebsite"]
-
-
-class EventForm(ModelForm):
-    # EventId = forms.AutoField(max_length=100, label='EventID')
-    # BusinessOwner = forms.ForeignKey(MyUser, on_delete=models.CASCADE)
-    EventAddress = forms.CharField(widget=TextInput, max_length=100, label='Address of Event')
-    # can place auto increment to decrement when bought
-    AvailableTickets = forms.IntegerField(widget=NumberInput, label="Tickets Available")
-    TotalTickets = forms.IntegerField(widget=NumberInput, label="Total Tickets")
-    EventDate = forms.DateTimeField(widget=DateTimeInput, label="Event Date")
-    # what movie to watch. So movies name/selection
-    # MovieId = models.ForeignKey(Movie, on_delete=models.CASCADE)
-    EventWebsite = forms.URLField(widget=URLInput, max_length=100, label='Website Url')
-
-    class Meta:
-        model = Event
-        fields = ["EventAddress", "AvailableTickets", "TotalTickets", "EventDate", "EventWebsite"]

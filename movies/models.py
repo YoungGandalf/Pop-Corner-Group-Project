@@ -1,6 +1,8 @@
 from django.db import models
 # Validators: Validate the fields
 from .validators import *
+from django.core.validators import MinValueValidator
+from datetime import date
 
 
 class MyUser(models.Model):
@@ -28,7 +30,7 @@ class Event(models.Model):
     AvailableTickets = models.IntegerField()
     TotalTickets = models.IntegerField()
     # Validate Date Time using Regex?
-    EventDate = models.DateTimeField()
+    EventDate = models.DateTimeField(validators=[MinValueValidator(limit_value=date.today)])
     MovieId = models.ForeignKey('Movie', on_delete=models.CASCADE)
     EventWebsite = models.URLField(max_length=100)
 

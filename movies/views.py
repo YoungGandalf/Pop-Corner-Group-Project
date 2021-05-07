@@ -13,6 +13,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
 from .models import *
 
+from datetime import date
 
 def index(request):
     return render(request, 'movies/index.html')
@@ -398,11 +399,29 @@ def add(request):
 
     # User must be logged into their account to add a reservation
     else:
-        messages.info(request, "You must login to create a purchase")
+        messages.error(request, "You must login to create a purchase")
         return redirect('/login')
 
 
-def event_form(request):
+def event(request):
+    # Check if user is logged in
+    if request.user.is_authenticated:
+
+        Movies = Movie.objects.filter()
+        numMovies = Movie.objects.filter().count()
+        context = {
+            'Movies': Movies,
+            'numMovies': numMovies,
+        }
+        return render(request, 'movies/event.html', context=context)
+
+    # User must be logged into their account to add a reservation
+    else:
+        messages.error(request, "You must login to create a purchase")
+        return redirect('/login')
+
+
+def add_event(request):
     # Check if user is logged in
     if request.user.is_authenticated:
 
@@ -410,45 +429,106 @@ def event_form(request):
         # Owner user email for foreign key in Event object creation
         # this gets the MyUser primary key and stores it in ownerID
         username = request.user.get_username()
-        owner_ID = MyUser.objects.get(UserName=username)
+        currentUser = MyUser.objects.get(UserName=username)
 
-        if (owner_ID.IsBusiness == True):
-
-            # Initialize form with the data from the site or none
-            form = EventForm(request.POST or None)
+        if currentUser.IsBusiness:
 
             if request.method == 'POST':
-                # If the form is valid
-                if form.is_valid():
 
-                    # Get data from form to store in event class object
-                    eventObj = Event(
-                        # EventId  Need to go and get the primary key from the event field
-                        Owner_id=owner_ID.UserEmail,
-                        EventAddress=form.cleaned_data.get('EventAddress'),
-                        AvailableTickets=form.cleaned_data.get('AvailableTickets'),
-                        TotalTickets=form.cleaned_data.get('TotalTickets'),
-                        EventDate=form.cleaned_data.get('EventDate'),
-                        EventWebsite=form.cleaned_data.get('EventWebsite'),
-                        MovieId_id=1
-                    )
-                    eventObj.save()
-                    form = EventForm(None)
-                    context = {'form': form}
-                    messages.info(request, "Your event has been successfully added!")
-                    return render(request, 'movies/index.html', context)
-                else:
-                    form = event_form(None)
-                    context = {'form': form}
+                # Get the list of movies the user wants to create an event for
+                movie = request.POST.getlist('movie')
+
+                # If more than one movie was chosen then bring up an error message
+                if len(movie) > 1:
+                    Movies = Movie.objects.filter()
+                    numMovies = Movie.objects.filter().count()
+                    context = {
+                        'Movies': Movies,
+                        'numMovies': numMovies,
+                    }
+                    messages.error(request, "You can only choose one movie for an event")
                     return render(request, 'movies/event.html', context)
+                # If no movies were chosen then bring up an error message
+                if len(movie) == 0:
+                    Movies = Movie.objects.filter()
+                    numMovies = Movie.objects.filter().count()
+                    context = {
+                        'Movies': Movies,
+                        'numMovies': numMovies,
+                    }
+                    messages.error(request, "You must choose a movie for the event")
+                    return render(request, 'movies/event.html', context)
+                movie = int(movie[0])
+                # Get the list of tickets the user put in
+                address = request.POST.get('EventAddress')
+                # Get list of IDs for each ticket
+                totalTickets = request.POST.get('TotalTickets')
+                # Get list of IDs for each ticket
+                eventDate = request.POST.get('EventDate')
+                # Get list of IDs for each ticket
+                website = request.POST.get('EventWebsite')
+
+                # Validate Total Tickets is an integer
+                if not totalTickets.isdigit():
+                    Movies = Movie.objects.filter()
+                    numMovies = Movie.objects.filter().count()
+                    context = {
+                        'Movies': Movies,
+                        'numMovies': numMovies,
+                    }
+                    messages.error(request, "Total Tickets must be an integer value")
+                    return render(request, 'movies/event.html', context)
+                totalTickets = int(totalTickets)
+
+                # Validate Total Tickets is not a negative number or a character
+                if totalTickets <= 0:
+                    Movies = Movie.objects.filter()
+                    numMovies = Movie.objects.filter().count()
+                    context = {
+                        'Movies': Movies,
+                        'numMovies': numMovies,
+                    }
+                    messages.error(request, "Total Tickets must be a number greater than 0")
+                    return render(request, 'movies/event.html', context)
+
+                # Validate Date is in the Future
+                # today = date.today()
+                # if eventDate < today:
+                #     Movies = Movie.objects.filter()
+                #     numMovies = Movie.objects.filter().count()
+                #     context = {
+                #         'Movies': Movies,
+                #         'numMovies': numMovies,
+                #     }
+                #     messages.error(request, "The event date must be in the future")
+                #     return render(request, 'movies/event.html', context)
+
+                # Passed validation so save information into the event database
+                print(movie)
+                e = Event(Owner_id=currentUser.UserEmail, EventAddress=address, AvailableTickets=totalTickets,
+                          TotalTickets=totalTickets, EventDate=eventDate, MovieId_id=movie, EventWebsite=website)
+                e.save()
+                Movies = Movie.objects.filter()
+                numMovies = Movie.objects.filter().count()
+                context = {
+                    'Movies': Movies,
+                    'numMovies': numMovies,
+                }
+                messages.error(request, "You have added an event!")
+                return render(request, 'movies/event.html', context)
+
             else:
-                # Reload page if form is not valid
-                context = {'form': form}
+                Movies = Movie.objects.filter()
+                numMovies = Movie.objects.filter().count()
+                context = {
+                    'Movies': Movies,
+                    'numMovies': numMovies,
+                }
                 return render(request, 'movies/event.html', context)
         else:
             messages.error(request, "You do not have access to this page."
                                     "\nIf you believe this is a mistake please login again!")
-            return redirect('/#index')
+            return redirect('/index')
     else:
         messages.error(request, "You must login in order to fill out this form")
         return redirect('/login')
@@ -545,7 +625,6 @@ def about_us(request):
 
 
 def movies(request):
-
     # Get the number of movie objects which exist
     numMovies = Movie.objects.filter().count()
     if numMovies == 0:
