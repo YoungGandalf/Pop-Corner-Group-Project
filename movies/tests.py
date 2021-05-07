@@ -165,7 +165,7 @@ class EventTestCases1(TestCase):
         count = Event.objects.filter().count()
         response = self.client.post(reverse('add_event'),
                                     data={'movie': '1','EventAddress':'1234 Testing Street','TotalTickets':'a',
-                                          'EventDate':'2021-10-25','EventWebsite':'https://www.JohnDoe.com'})
+                                          'EventDate':'2021-10-25T02:04','EventWebsite':'https://www.JohnDoe.com'})
         # Make sure nothing is added to the database
         self.assertFalse(Event.objects.filter().count(),count+1)
         # redirects back to the same page
@@ -175,7 +175,7 @@ class EventTestCases1(TestCase):
     def test_Valid_Event_Added(self):
         response = self.client.post(reverse('add_event'),
                                     data={'movie': '1','EventAddress':'1234 Testing Street','TotalTickets':'10',
-                                          'EventDate':'2021-10-25','EventWebsite':'https://www.JohnDoe.com'})
+                                          'EventDate':'2021-10-25T02:04','EventWebsite':'https://www.JohnDoe.com'})
         # Make sure something got added to the database
         self.assertTrue(Event.objects.filter().count(),1)
         # redirects back to the same page

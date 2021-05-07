@@ -418,8 +418,9 @@ def event(request):
 
     # User must be logged into their account to add a reservation
     else:
-        messages.error(request, "You must login to create a purchase")
-        return redirect('/login')
+        messages.error(request, "You do not have access to this page."
+                                "\nIf you believe this is a mistake please login again!")
+        return redirect('/#index')
 
 
 def add_event(request):
@@ -531,7 +532,7 @@ def add_event(request):
         else:
             messages.error(request, "You do not have access to this page."
                                     "\nIf you believe this is a mistake please login again!")
-            return redirect('/index')
+            return redirect('/#index')
     else:
         messages.error(request, "You must login in order to fill out this form")
         return redirect('/login')
