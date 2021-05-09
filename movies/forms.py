@@ -42,39 +42,3 @@ class ReservationForm(ModelForm):
     class Meta:
         model = Reservation
         fields = ["TicketsReserved", "temp"]
-
-
-class EventForm(ModelForm):
-    # EventId = forms.AutoField(max_length=100, label='EventID')
-    # BusinessOwner = forms.ForeignKey(MyUser, on_delete=models.CASCADE)
-    EventName = forms.CharField(widget=TextInput, max_length=100, label="Name of Event")
-    EventAddress = forms.CharField(widget=TextInput, max_length=100, label='Address of Event')
-    # can place auto increment to decrement when bought
-    AvailableTickets = forms.IntegerField(widget=NumberInput, label="Tickets Available")
-    TotalTickets = forms.IntegerField(widget=NumberInput, label="Total Tickets")
-    EventDate = forms.DateTimeField(widget=DateTimeInput, label="Event Date")
-    # what movie to watch. So movies name/selection
-    # MovieId = models.ForeignKey(Movie, on_delete=models.CASCADE)
-    EventWebsite = forms.URLField(widget=URLInput, max_length=100, label='Website Url')
-
-    class Meta:
-        model = Event
-        fields = ["EventName", "EventAddress", "AvailableTickets", "TotalTickets", "EventDate", "EventWebsite"]
-
-
-class EventForm(ModelForm):
-    # EventId = forms.AutoField(max_length=100, label='EventID')
-    # BusinessOwner = forms.ForeignKey(MyUser, on_delete=models.CASCADE)
-    EventName = forms.CharField(widget=TextInput, max_length=100, label="Name of Event")
-    EventAddress = forms.CharField(widget=TextInput, max_length=100, label='Address of Event')
-    # can place auto increment to decrement when bought
-    AvailableTickets = forms.IntegerField(widget=NumberInput, label="Tickets Available")
-    TotalTickets = forms.IntegerField(widget=NumberInput, label="Total Tickets")
-    EventDate = forms.DateTimeField(widget=DateTimeInput, label="Event Date")
-    # what movie to watch. So movies name/selection
-    # MovieId = models.ForeignKey(Movie, on_delete=models.CASCADE)
-    EventWebsite = forms.URLField(widget=URLInput, max_length=100, label='Website Url')
-
-    class Meta:
-        model = Event
-        fields = ["EventName", "EventAddress", "AvailableTickets", "TotalTickets", "EventDate", "EventWebsite"]
