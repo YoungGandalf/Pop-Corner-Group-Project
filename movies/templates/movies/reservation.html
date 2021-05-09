@@ -48,67 +48,79 @@
         </div>
     </header>
 
-    <!-- ======= Hero Section ======= -->
-    <section id="hero" class="d-flex align-items-center">
+    <!-- ======= Reservations Section ======= -->
+    <section id="reservations" class="reservations section-bg">
         <div class="container">
-            <div class="row">
-                <div class="col-lg-6 pt-5 pt-lg-0 order-2 order-lg-1">
-                    <h1 style="color:tomato;font-size:150%;font-family:'Optima';">Reservation Info</h1>
-                    <p>
-                        {% if Count != 0 %}
-                            Here are possible movies to watch with the associating dates and times:
-                            <ol>
-
-                                {% if messages %}
-                                    <ul class="messages">
-                                        {% for message in messages %}
-                                            <li  {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </li>
-                                        {% endfor %}
-                                    </ul>
-                                {% endif %}
-                                {% if error %}
-                                    {{ error }}
-                                {% endif %}
-
-                                <form action="/add/" method="POST">
-                                    {% if Count != 0 %}
-                                        {% for Event in Events %}
-                                            {% if Event.AvailableTickets > 0 %}
-                                                {% csrf_token %}
-                                                 <!-- Print out Relevant Information for the Movie-->
-                                                <li> <img src="{{Event.MovieId.MoviePic}}"/ height="150px"> <br/>
-                                                    Movie Name: {{ Event.MovieId.MovieName }}  <br>
-                                                    Event Address: {{ Event.EventAddress }} <br>
-                                                    Event Date:{{ Event.EventDate }}</li>
-                                                    Number of Tickets Available: {{ Event.AvailableTickets }}<br>
-
-
-                                                        <!-- Both inputs need to be a list (specified by id) -->
-                                                        <!-- Ask User for the number of tickets (default is 0)-->
-                                                        How many tickets would you like to buy?
-                                                        <input type="integer" name="tickets" id="tickets.id" value = 0><br/>
-                                                        <!--<input type="number" name="tickets" id="tickets.id" min="0" max = "{{ Event.AvailableTickets }}"><br/>-->
-                                                        <!-- Store the current Event ID -->
-                                                        <input type="hidden" value={{ Event.EventId }} name=tempId id="temp.id" readonly><br>
-
-                                            {% endif %}
-                                        {% endfor %}
-                                        <input type="submit" name="submit" value="Add Reservation"/>
-                                    {% endif %}
-                                </form>
-                            </ol>
-                        {% else %}
-                            There are no available events to choose from.
-                        {% endif %}
-                    </p>
-                    If you would like to view your current reservations, <a href = "/edit_reservation"><strong>View Reservations</strong></a>.
-                    {% if IsBusiness %}
-                        If you would like to create an event, <a href = "/event"><strong>Event</strong></a>.
-                    {% endif %}
-                </div>
+            <div class="section-title">
+            <h2>Reservation Info</h2>
+                <p>Here are possible movies to watch</p>
             </div>
+
+            {% if Count != 0 %}
+
+                {% if messages %}
+                    <ul class="messages">
+                        {% for message in messages %}
+                        <li {% if messages.tags %} class="{{ message.tags }}" {% endif %} >
+                            {{ message }}
+                        </li>
+                        {%  endfor %}
+                    </ul>
+                {% endif %}
+                {% if error %}
+                    {{ error }}
+                {% endif %}
+
+                <form action="/add/" method="POST">
+                    {% if Count != 0 %}
+                        {% for Event in Events %}
+
+                            {% csrf_token %}
+                            <section id="{{ Event.LocationName }}">
+                                <!-- Print out Relevant Information for the Movie-->
+                                <img src="{{Event.MovieId.MoviePic}}" style="height:200px; float:left; padding-right: 10px" <br/>
+                                <h5>{{ Event.MovieId.MovieName }}</h5>  <br>
+                                <p> Address: {{ Event.LocationName }} <br>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    {{ Event.EventAddress }} <br>
+                                    Number of Tickets Available: {{ Event.AvailableTickets }}<br>
+                                    Event Date: {{ Event.EventDate }}</p>
+                                {% if Event.AvailableTickets > 0 %}
+                                    <!-- Both inputs need to be a list (specified by id) -->
+                                    <!-- Ask User for the number of tickets (default is 0)-->
+                                    <p> How many tickets would you like to buy?
+                                        <input style="direction: rtl;" type="integer" name="tickets" id="tickets.id" value = 0><br/>
+                                        <!--<input type="number" name="tickets" id="tickets.id" min="0" max = "{{ Event.AvailableTickets }}"><br/>-->
+                                        <!-- Store the current Event ID -->
+                                        <input style="direction: rtl;" type="hidden" value={{ Event.EventId }} name=tempId id="temp.id" readonly>
+                                    </p>
+                                {% else %}
+                                    <p> There are no tickets available</p>
+                                {% endif %}
+                            </section>
+
+                        {% endfor %}
+                        <input type="submit" name="submit" value="Add Reservation"/>
+                    {% endif %}
+                </form>
+
+            {% else %}
+                <p>There are no available events</p>
+            {% endif %}
+
+        <p> <br>
+            If you would like to view your current reservations, <a href = "/edit_reservation"><strong>View Reservations</strong></a>.
+            <br/>
+            {% if IsBusiness %}
+                 If you would like to create an event, <a href = "/event"><strong>Event</strong></a>.
+            {% endif %}
+        </p>
+
         </div>
+
     </section>
+
 </body>
 
 </html>
