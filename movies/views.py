@@ -300,6 +300,7 @@ def event_form(request):
             eventObj = Event(
                 # EventId  Need to go and get the primary key from the event field
                 Owner_id=owner_ID.UserEmail,
+                EventName=form.cleaned_data.get('EventName'),
                 EventAddress=form.cleaned_data.get('EventAddress'),
                 AvailableTickets=form.cleaned_data.get('AvailableTickets'),
                 TotalTickets=form.cleaned_data.get('TotalTickets'),
