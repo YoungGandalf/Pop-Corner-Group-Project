@@ -90,10 +90,10 @@
                                     <!-- Both inputs need to be a list (specified by id) -->
                                     <!-- Ask User for the number of tickets (default is 0)-->
                                     <p> How many tickets would you like to buy?
-                                        <input style="direction: rtl;" type="integer" name="tickets" id="tickets.id" value = 0><br/>
+                                        <input type="integer" name="tickets" id="tickets.id" value = 0><br/>
                                         <!--<input type="number" name="tickets" id="tickets.id" min="0" max = "{{ Event.AvailableTickets }}"><br/>-->
                                         <!-- Store the current Event ID -->
-                                        <input style="direction: rtl;" type="hidden" value={{ Event.EventId }} name=tempId id="temp.id" readonly>
+                                        <input type="hidden" value={{ Event.EventId }} name=tempId id="temp.id" readonly>
                                     </p>
                                 {% else %}
                                     <p> There are no tickets available</p>

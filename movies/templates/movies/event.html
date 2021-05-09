@@ -88,16 +88,19 @@
                                 <p> Would you like to choose this movie? </p>
 
                                 <!-- Store the current Movie ID inside the checkbox -->
-                                <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value={{Movie.MovieId}} id="MovieID.id" name="movie">
+                                <!--<div class="form-check">-->
+                                <!--<input class="form-check-input" type="checkbox" value={{Movie.MovieId}} id="MovieID.id" name="movie">
                                 <label class="form-check-label" for="MovieID.id"></label>
-                                </div>
+
+                                </div>-->
+                                <input class="check" type="checkbox" value={{Movie.MovieId}} id="MovieID.id" name="movie">
                             </section>
 
                         {% endfor %}
                         <!-- Prompt the user for appropriate event information -->
                         <br> <br/>
                         <pre>Address of Event    <input type="text" name="EventAddress" required></pre>
+                        <pre>Location Name    <input type="text" name="LocationName" required></pre>
                         <pre>Total Tickets            <input type="integer" name="TotalTickets" required></pre>
                         <pre>Event Date & Time <input type="datetime-local" name="EventDate" required></pre>
                         <pre>Business Url            <input type="url" name="EventWebsite" required></pre><br>

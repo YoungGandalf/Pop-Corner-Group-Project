@@ -409,18 +409,31 @@ def event(request):
     # Check if user is logged in
     if request.user.is_authenticated:
 
-        Movies = Movie.objects.filter()
-        numMovies = Movie.objects.filter().count()
-        context = {
-            'Movies': Movies,
-            'numMovies': numMovies,
-        }
-        return render(request, 'movies/event.html', context=context)
+        # Checks if user is a business while also...
+        # Owner user email for foreign key in Event object creation
+        # this gets the MyUser primary key and stores it in ownerID
+        username = request.user.get_username()
+        currentUser = MyUser.objects.get(UserName=username)
+
+        if currentUser.IsBusiness:
+
+            Movies = Movie.objects.filter()
+            numMovies = Movie.objects.filter().count()
+            context = {
+                'Movies': Movies,
+                'numMovies': numMovies,
+            }
+            return render(request, 'movies/event.html', context=context)
+
+        # User must be logged into their account to add a reservation
+        else:
+            messages.error(request, "You do not have access to this page."
+                                    "\nIf you believe this is a mistake please login again!")
+            return redirect('/#index')
 
     # User must be logged into their account to add a reservation
     else:
-        messages.error(request, "You do not have access to this page."
-                                "\nIf you believe this is a mistake please login again!")
+        messages.error(request, "You must login in order to fill out this form")
         return redirect('/#index')
 
 
@@ -472,6 +485,7 @@ def add_event(request):
                 eventDate = request.POST.get('EventDate')
                 # Get list of IDs for each ticket
                 website = request.POST.get('EventWebsite')
+
 
                 # Validate Total Tickets is an integer
                 if not totalTickets.isdigit():
