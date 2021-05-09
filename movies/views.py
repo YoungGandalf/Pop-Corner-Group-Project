@@ -344,6 +344,7 @@ def add(request):
                                                                            'num_tickets': int(numTickets[counter]),
                                                                            'event_name': currentEvent.MovieId.MovieName,
                                                                            'event_date': currentEvent.EventDate,
+                                                                           'location_name': currentEvent.LocationName,
                                                                            'event_location': currentEvent.EventAddress})
                 email = EmailMessage(
                     'PopCorner - Ticket Confirmation',
@@ -461,6 +462,8 @@ def add_event(request):
                     messages.error(request, "You must choose a movie for the event")
                     return render(request, 'movies/event.html', context)
                 movie = int(movie[0])
+                # Get the name of the location
+                loc_name = request.POST.get('LocationName')
                 # Get the list of tickets the user put in
                 address = request.POST.get('EventAddress')
                 # Get list of IDs for each ticket
@@ -508,7 +511,7 @@ def add_event(request):
 
                 # Passed validation so save information into the event database
 
-                e = Event(Owner_id=currentUser.UserEmail, EventAddress=address, AvailableTickets=totalTickets,
+                e = Event(Owner_id=currentUser.UserEmail, LocationName=loc_name, EventAddress=address, AvailableTickets=totalTickets,
                           TotalTickets=totalTickets, EventDate=eventDate, MovieId_id=movie, EventWebsite=website)
                 e.save()
 

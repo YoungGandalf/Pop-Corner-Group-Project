@@ -23,6 +23,7 @@ class Event(models.Model):
     EventId = models.AutoField(primary_key=True)
     Owner = models.ForeignKey('MyUser', on_delete=models.CASCADE)
     # Validate Address Syntax using Regex?
+    LocationName = models.CharField(max_length=100)
     EventAddress = models.CharField(max_length=100)
     AvailableTickets = models.IntegerField()
     TotalTickets = models.IntegerField()
