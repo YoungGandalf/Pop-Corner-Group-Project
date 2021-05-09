@@ -19,12 +19,11 @@ function initMap() {
 
     for (var i = 0; i < locations.length; i++){
         var place = locations[i];
-        var my_href = "/reservation/#"+place[0];
         var myLatLng = new google.maps.LatLng(place[1], place[2]);
         var marker = new google.maps.Marker({
             position: myLatLng,
             map: map,
-            url: my_href,
+            url: "/reservation",
             title: place[0]
         });
 
