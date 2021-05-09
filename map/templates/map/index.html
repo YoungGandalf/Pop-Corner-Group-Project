@@ -52,30 +52,10 @@
         </div>
     </header>
 
+    <h3 style="padding-left: 15px">Click on a marker to make a reservation</h3>
+
     <div id="map"></div>
 
-    <section id="hero" class="d-flex align-items-center">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-6 pt-5 pt-lg-0 order-2 order-lg-1">
-                    {% for Event in Events %}
-                        <section id="{{ Event.EventAddress }}">
-                            <li>{{ Event.EventAddress }} <br>
-                                Movie Name: {{ Event.MovieId.MovieName }} <br>
-                                Event Date: {{ Event.EventDate }} </li>
-                            {% if Event.AvailableTickets > 0 %}
-                                Number of Tickets Available: {{ Event.AvailableTickets }}<br>
-                            {% else %}
-                                No Tickets are Available
-                            {% endif %}
-                            <p></p>
-                        </section>
-                    {% endfor %}
-                </div>
-            </div>
-        <p> Click here to <a href = "/reservation"><strong>Make Reservations</strong></a> </p>
-        </div>
-    </section>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCU5UxvRgKF5tZdxDMyO9Al0jf18oppvNk&callback=initMap&libraries=&v=weekly" async></script>
 </body>
 

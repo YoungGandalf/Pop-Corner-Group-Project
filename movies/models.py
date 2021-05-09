@@ -22,6 +22,7 @@ class Movie(models.Model):
 class Event(models.Model):
     EventId = models.AutoField(primary_key=True)
     Owner = models.ForeignKey('MyUser', on_delete=models.CASCADE)
+    EventName = models.CharField(max_length=100)
     # Validate Address Syntax using Regex?
     EventAddress = models.CharField(max_length=100)
     AvailableTickets = models.IntegerField()

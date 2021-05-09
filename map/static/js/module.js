@@ -24,7 +24,7 @@ function initMap() {
             position: myLatLng,
             map: map,
             title: place[0],
-            url: "#1234 John Street California MD 12345"
+            url: "/reservation"
         });
 
         google.maps.event.addListener(marker, 'onmouseover', function(){
