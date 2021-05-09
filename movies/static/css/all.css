@@ -283,3 +283,41 @@ h1, h2, h3, h4, h5, h6, .font-primary {
     transform: translateY(-10px);
   }
 }
+
+/*
+# General Section Info
+ */
+section {
+  padding: 60px 0;
+}
+
+.section-bg {
+  background-color: #fef8f5;
+}
+
+.section-title {
+  text-align: center;
+  padding-top: 30px;
+  padding-bottom: 30px;
+}
+
+.section-title h2 {
+  font-size: 24px;
+  font-weight: 700;
+  padding-top: 50px;
+  padding-bottom: 0;
+  line-height: 1px;
+  margin-bottom: 15px;
+  color: #c2b7b1;
+}
+
+.section-title p {
+  padding-bottom: 15px;
+  margin-bottom: 15px;
+  position: relative;
+  font-size: 32px;
+  font-weight: 700;
+  color: #4e4039;
+}
+
+

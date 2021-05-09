@@ -21,6 +21,9 @@
     <!-- Template CSS Files -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}" type="text/css">
     <link rel="stylesheet" href="{% static 'css/all.css' %}" type="text/css">
+
+    <script type="text/javascript" src="{% static 'js/module.js' %}"></script>
+
 </head>
 
 <body>
@@ -49,14 +52,24 @@
         </div>
     </header>
 
-    <div id="map">
+    <h5 style="padding-left: 15px">Hover over a marker to see the location name </h5>
+    <h5 style="padding-left: 15px">and click on it to make a reservation</h5>
+
+    <div id="map"></div>
+
+    <section id="hero" class="d-flex align-items-center">
         <div class="container">
-        <script type="text/javascript" src="{% static 'js/module.js' %}"></script>
-            <script
-                    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDUYrj8-4B0zXsqYGGfzw28WnDGc7l8Wcs&callback=initMap&libraries=&v=weekly"
-                    async></script>
+            <div class="row">
+                <div class="col-lg-6 pt-5 pt-lg-0 order-2 order-lg-1">
+                </div>
+            </div>
         </div>
-    </div>
+    </section>
+
+    <script
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCU5UxvRgKF5tZdxDMyO9Al0jf18oppvNk&callback=initMap&libraries=&v=weekly"
+            async></script>
+
 </body>
 
 </html>
