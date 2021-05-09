@@ -53,66 +53,73 @@
         </div>
     </header>
 
-    <!-- ======= Hero Section ======= -->
-    <section id="hero" class="d-flex align-items-center">
+    <!-- ======= Reservations Section ======= -->
+    <section id="reservations" class="reservations section-bg">
         <div class="container">
-            <div class="row">
-                <div class="col-lg-6 pt-5 pt-lg-0 order-2 order-lg-1">
-                    <h1 style="color:tomato;font-size:150%;font-family:'Optima';">Reservation Info</h1>
-                    <p>
-                        {% if numCount != 0 %}
-                            Here are possible movies to watch with the associating dates and times:
-                            <ol>
-
-                                {% if messages %}
-                                    <ul class="messages">
-                                        {% for message in messages %}
-                                            <li  {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </li>
-                                        {% endfor %}
-                                    </ul>
-                                {% endif %}
-                                {% if error %}
-                                    {{ error }}
-                                {% endif %}
-
-                                <form action="/add_event/" method="POST">
-                                    {% if numCount != 0 %}
-                                        {% for Movie in Movies %}
-
-                                            {% csrf_token %}
-                                             <!-- Print out Relevant Information for the Movie-->
-                                            <li> <img src="{{Movie.MoviePic}}"/ height="150px"> <br/>
-                                                Movie Name: {{ Movie.MovieName }}  <br>
-                                                Would you like to choose this movie?
-                                                    <!-- Store the current Movie ID inside the checkbox -->
-                                                     <div class="form-check">
-                                                        <input class="form-check-input" type="checkbox" value={{Movie.MovieId}} id="MovieID.id" name="movie">
-                                                        <label class="form-check-label" for="MovieID.id"></label>
-                                                    </div>
-                                        {% endfor %}
-
-                                        <!-- Prompt the user for appropriate event information -->
-                                        <pre>Address of Event    <input type="text" name="EventAddress" required></pre>
-                                        <pre>Total Tickets            <input type="integer" name="TotalTickets" required></pre>
-                                        <pre>Event Date & Time <input type="datetime-local" name="EventDate" required></pre>
-                                        <pre>Business Url            <input type="url" name="EventWebsite" required></pre><br>
-
-                                        <input type="submit" name="submit" value="Add Reservation"/>
-                                    {% endif %}
-                                </form>
-                            </ol>
-                        {% else %}
-                            There are no available movies to choose from. You can't create an event right now.
-                        {% endif %}
-                    </p>
-                    If you would like to view your current reservations, <a href = "/edit_reservation"><strong>View Reservations</strong></a>.
-                    {% if IsBusiness %}
-                        If you would like to create an event, <a href = "/event"><strong>Event</strong></a>.
-                    {% endif %}
-                </div>
+            <div class="section-title">
+            <h2>Reservation Info</h2>
+                <p>Here are possible movies to watch</p>
             </div>
+
+            {% if numCount != 0 %}
+
+                {% if messages %}
+                    <ul class="messages">
+                        {% for message in messages %}
+                        <li {% if messages.tags %} class="{{ message.tags }}" {% endif %} >
+                            {{ message }}
+                        </li>
+                        {%  endfor %}
+                    </ul>
+                {% endif %}
+                {% if error %}
+                    {{ error }}
+                {% endif %}
+
+                <form action="/add_event/" method="POST">
+                    {% if numCount != 0 %}
+                        {% for Movie in Movies %}
+
+                            {% csrf_token %}
+                            <section id="{{ Event.LocationName }}">
+                                <!-- Print out Relevant Information for the Movie-->
+                                <img src="{{Movie.MoviePic}}" style="height:200px; float: left; padding-right: 10px;"> <br/>
+                                <h5>{{ Event.MovieId.MovieName }}</h5>  <br>
+                                <p> Would you like to choose this movie? </p>
+
+                                <!-- Store the current Movie ID inside the checkbox -->
+                                <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value={{Movie.MovieId}} id="MovieID.id" name="movie">
+                                <label class="form-check-label" for="MovieID.id"></label>
+                                </div>
+                            </section>
+
+                        {% endfor %}
+                        <!-- Prompt the user for appropriate event information -->
+                        <br> <br/>
+                        <pre>Address of Event    <input type="text" name="EventAddress" required></pre>
+                        <pre>Total Tickets            <input type="integer" name="TotalTickets" required></pre>
+                        <pre>Event Date & Time <input type="datetime-local" name="EventDate" required></pre>
+                        <pre>Business Url            <input type="url" name="EventWebsite" required></pre><br>
+                        <input type="submit" name="submit" value="Add Reservation"/>
+                    {% endif %}
+                </form>
+
+            {% else %}
+                <p> There are no available movies to choose from. You can't create an event right now. </p>
+            {% endif %}
+
+            <p> <br>
+            If you would like to view your current reservations, <a href = "/edit_reservation"><strong>View Reservations</strong></a>.
+            <br/>
+            {% if IsBusiness %}
+                If you would like to create an event, <a href = "/event"><strong>Event</strong></a>.
+            {% endif %}
+            </p>
+
         </div>
     </section>
+
 </body>
 
 </html>

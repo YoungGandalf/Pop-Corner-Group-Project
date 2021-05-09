@@ -78,7 +78,7 @@
                             {% csrf_token %}
                             <section id="{{ Event.LocationName }}">
                                 <!-- Print out Relevant Information for the Movie-->
-                                <img src="{{Event.MovieId.MoviePic}}" style="height:200px; float:left; padding-right: 10px" <br/>
+                                <img src="{{Event.MovieId.MoviePic}}" style="height:200px; float:left; padding-right: 10px;" ><br/>
                                 <h5>{{ Event.MovieId.MovieName }}</h5>  <br>
                                 <p> Address: {{ Event.LocationName }} <br>
                                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
