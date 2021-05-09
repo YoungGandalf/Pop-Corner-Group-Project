@@ -165,6 +165,7 @@ class EventTestCases1(TestCase):
         count = Event.objects.filter().count()
         response = self.client.post(reverse('add_event'),
                                     data={'movie': '1','EventAddress':'1234 Testing Street','TotalTickets':'a',
+                                          'LocationName': 'UMBC Campus',
                                           'EventDate':'2021-10-25T02:04','EventWebsite':'https://www.JohnDoe.com'})
         # Make sure nothing is added to the database
         self.assertFalse(Event.objects.filter().count(),count+1)
@@ -175,6 +176,7 @@ class EventTestCases1(TestCase):
     def test_Valid_Event_Added(self):
         response = self.client.post(reverse('add_event'),
                                     data={'movie': '1','EventAddress':'1234 Testing Street','TotalTickets':'10',
+                                          'LocationName': 'UMBC Campus',
                                           'EventDate':'2021-10-25T02:04','EventWebsite':'https://www.JohnDoe.com'})
         # Make sure something got added to the database
         self.assertTrue(Event.objects.filter().count(),1)
@@ -221,7 +223,7 @@ class EditReservationTestCase(TestCase):
         testMovie.save()
         testEvent = Event(Owner_id="owner@gmail.com", EventAddress="5142 Owner Road Business California 12345",
                           AvailableTickets=8, TotalTickets=10, EventDate='2021-10-25 10:20:01', MovieId_id=1,
-                          EventWebsite="www.business.com")
+                          LocationName="UMBC Campus", EventWebsite="www.business.com")
         testEvent.save()
         testReservation = Reservation(Owner_id="owner@gmail.com", EventId_id=1, TicketsReserved=2)
         testReservation.save()
@@ -261,7 +263,7 @@ class PaymentRedirectTestCase(TestCase):
         testMovie.save()
         testEvent = Event(Owner_id="owner@gmail.com", EventAddress="5142 Owner Road Business California 12345",
                           AvailableTickets=10, TotalTickets=10, EventDate='2021-10-25 10:20:01', MovieId_id=1,
-                          EventWebsite="www.business.com")
+                          LocationName="UMBC Campus", EventWebsite="www.business.com")
         testEvent.save()
         user = User.objects.create_user(username='testing', password='Testing123')
         self.client.login(username='testing', password='Testing123')
@@ -293,7 +295,7 @@ class EmailTestCase(TestCase):
         testMovie.save()
         testEvent = Event(Owner_id="testing@gmail.com", EventAddress="5142 Owner Road Business California 12345",
                           AvailableTickets=10, TotalTickets=10, EventDate='2021-10-25 10:20:01', MovieId_id=1,
-                          EventWebsite="www.business.com")
+                          LocationName="UMBC Campus", EventWebsite="www.business.com")
         testEvent.save()
 
     # Checks the simple case once an email is sent: verifies the subject, content, and sender
