@@ -6,7 +6,7 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     {%  load static  %}
 
-    <title>Payment</title>
+    <title>Manage Reservations</title>
 
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,600,600i,700,700i" rel="stylesheet">
@@ -23,7 +23,6 @@
 </head>
 
 <body>
-
     <!-- ======= Header ======= -->
     <header id="header" class="fixed-top">
         <div class="container-fluid d-flex">
@@ -54,22 +53,40 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-6 pt-5 pt-lg-0 order-2 order-lg-1">
-                    <h1 style="color:tomato;font-size:150%;font-family:'Optima';">Payment Info</h1>
-                    <form action="" method="POST">
-                        {% csrf_token %}
-                        <!-- Prints out messages -->
-                        {% if messages %}
-                            {% for message in messages%}
-                                <div class="alert alert-info alert-dismissible">
-                                    <a class="close" href="#" data-dismiss="alert" aria-label="close">&times;</a>
-                                    {{message}}
-                                </div>
-                             {% endfor %}
-                         {% endif %}
-                        <! -- Print out each textbox in the form -->
-                        {{ form.as_p }}
-                        <input type="submit" name="submit" value="Add Payment"/>
-                    </form>
+                    <h1 style="color:tomato;font-size:150%;font-family:'Optima';">Select Your Card for Payment</h1>
+                    <p>
+                        Here are the cards registered to your account:
+                        <ol>
+
+                            {% if messages %}
+                                <ul class="messages">
+                                    {% for message in messages %}
+                                        <li  {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                            {% if error %}
+                                {{ error }}
+                            {% endif %}
+
+                        <form action="/finish_payment/" method="POST">
+                            {% csrf_token %}
+                            {% for Payment in Payments %}
+
+                                <!-- Print out Relevant Information for the Reservation-->
+                                <li>Card Number: {{ Payment.CardNumber }} <br>
+                                    Expiration Date: {{ Payment.ExpDate }} <br>
+                                    Address: {{ Payment.Address }} <br>
+
+                                    Would you like to use this card?
+                                    <input type="radio" name="remove" id="remove.id"></li><br/>
+
+                            {% endfor %}
+                            <input type="submit" name="submit" value="Choose Card"/>
+                        </form>
+                        </ol>
+                    </p>
+                    If you would like to add a card to your account, <a href = "/payment"><strong>Add Card</strong></a>.
                 </div>
             </div>
         </div>

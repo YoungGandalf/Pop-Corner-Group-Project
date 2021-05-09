@@ -1,3 +1,4 @@
+html
 <!DOCTYPE html>
 <html lang="en">
 
@@ -6,7 +7,7 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     {%  load static  %}
 
-    <title>Payment</title>
+    <title>Add Reservation</title>
 
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,600,600i,700,700i" rel="stylesheet">
@@ -20,9 +21,12 @@
 
     <!-- Template CSS Files -->
     <link rel="stylesheet" href="{% static 'css/all.css' %}" type="text/css">
+    {% load static %}
+    <link rel="stylesheet" href="{% static "/css/flickity.css" %}" />
 </head>
 
 <body>
+    <script src="{% static "/js/flickity.pkgd.min.js" %}"></script>
 
     <!-- ======= Header ======= -->
     <header id="header" class="fixed-top">
@@ -54,26 +58,55 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-6 pt-5 pt-lg-0 order-2 order-lg-1">
-                    <h1 style="color:tomato;font-size:150%;font-family:'Optima';">Payment Info</h1>
-                    <form action="" method="POST">
-                        {% csrf_token %}
-                        <!-- Prints out messages -->
-                        {% if messages %}
-                            {% for message in messages%}
-                                <div class="alert alert-info alert-dismissible">
-                                    <a class="close" href="#" data-dismiss="alert" aria-label="close">&times;</a>
-                                    {{message}}
+                    <h1 style="color:tomato;font-size:150%;font-family:'Optima';">Movies</h1>
+                    <p>
+                        <ol>
+
+                            {% if messages %}
+                                <ul class="messages">
+                                    {% for message in messages %}
+                                        <li  {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                            {% if error %}
+                                {{ error }}
+                            {% endif %}
+
+                            {% if numMovies != 0 %}
+                                <!-- Flickity HTML init -->
+                                <div class="carousel"
+                                    data-flickity='{ "lazyLoad": true,"wrapAround": true,"groupCells":true, "draggable":true }'>
+
+                                    {% for Movie in Movies %}
+                                        {% csrf_token %}
+
+
+                                        <div class="carousel-cell">
+                                            <img class="carousel-cell-image" data-flickity-lazyload="{{Movie.MoviePic}}" alt="{{Movie.MoviePic}}" />
+                                        </div>
+
+
+                                    {% endfor %}
                                 </div>
-                             {% endfor %}
-                         {% endif %}
-                        <! -- Print out each textbox in the form -->
-                        {{ form.as_p }}
-                        <input type="submit" name="submit" value="Add Payment"/>
-                    </form>
+                            {% else %}
+                                There are no movies to display. <br/>
+                            {% endif %}
+                        </ol>
+                    </p>
+                    <br>If you would like to create a reservation, <a href = "/reservation"><strong>Reservation</strong></a>.<br/>
+                    {% if user.is_authenticated %}
+                        {% if IsBusiness %}
+                            If you would like to create an event, <a href = "/event"><strong>Event</strong></a>.
+                        {% endif %}
+                    {% endif %}
                 </div>
             </div>
-        </div>
+	</div>
     </section>
 </body>
 
 </html>
+
+
+

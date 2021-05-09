@@ -2,12 +2,18 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse
 
+from django.core.mail import EmailMessage
+from django.conf import settings
+from django.template.loader import render_to_string
+
 from .forms import *
 from django.contrib.auth.models import User
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
 from .models import *
+
+from datetime import date, datetime
 
 
 def index(request):
@@ -131,7 +137,7 @@ def add_payment(request):
 
     # User must be logged into their account to add a credit card
     else:
-        messages.info(request, "You must login to add payment information")
+        messages.error(request, "You must login to add payment information")
         return redirect('/login')
 
 
@@ -141,8 +147,29 @@ def reservation(request):
     if request.user.is_authenticated:
 
         Events = Event.objects.filter()
+
+        # Get number of event elements
+        temp = Event.objects.filter().count()
+        Count = 0
+        # If there are no event objects then count will be 0
+        if temp == 0:
+            Count = 0
+        # Else there are event objects
+        else:
+            # Iterate through the events and make sure there are Available Tickets
+            for e in Events:
+                if e.AvailableTickets != 0:
+                    Count = Count + 1
+
+        # Check if the owner is a business
+        username = request.user.get_username()
+        owner_ID = MyUser.objects.get(UserName=username)
+        IsBusiness = owner_ID.IsBusiness
+
         context = {
             'Events': Events,
+            'Count': Count,
+            'IsBusiness': IsBusiness,
         }
         return render(request, 'movies/reservation.html', context=context)
 
@@ -176,8 +203,29 @@ def add(request):
             messages.error(request,
                            "The number of tickets you entered contains characters. Please only include integers.")
             Events = Event.objects.filter()
+
+            # Get number of event elements
+            temp = Event.objects.filter().count()
+            Count = 0
+            # If there are no event objects then count will be 0
+            if temp == 0:
+                Count = 0
+            # Else there are event objects
+            else:
+                # Iterate through the events and make sure there are Available Tickets
+                for e in Events:
+                    if e.AvailableTickets != 0:
+                        Count = Count + 1
+
+                        # Check if the owner is a business
+            username = request.user.get_username()
+            owner_ID = MyUser.objects.get(UserName=username)
+            IsBusiness = owner_ID.IsBusiness
+
             context = {
                 'Events': Events,
+                'Count': Count,
+                'IsBusiness': IsBusiness,
             }
             return render(request, 'movies/reservation.html', context)
 
@@ -202,124 +250,292 @@ def add(request):
                 # If it failed then reprompt the user for another input
                 messages.error(request, "The number of tickets you reserve must be a positive integer")
                 Events = Event.objects.filter()
-                context = {
-                    'Events': Events,
-                }
-                return render(request, 'movies/reservation.html', context)
 
-        # Place information into the form and authenticate
-        form = ReservationForm(data={'TicketsReserved': 0, 'temp': 0})
-
-        # Check if form is valid
-        if form.is_valid():
-
-            # Grab current users email for foreign key in Reservation object creation,
-            username = request.user.get_username()
-            currentUser = MyUser.objects.get(UserName=username)
-
-            # Set counter to keep track of indexes
-            counter = 0
-            # Iterate through the eventID array
-            for e in eventID:
-
-                # Get Event associated with the tempID
-                currentEvent = Event.objects.get(EventId=e)
-
-                # Need to update the Event with the current number of tickets available
-                currentEvent.AvailableTickets = currentEvent.AvailableTickets - int(numTickets[counter])
-
-                # Make sure the ticket number entered was valid
-                if currentEvent.AvailableTickets < 0:
-                    # If it failed then reprompt the user for another input
-                    messages.error(request, "The number of tickets you reserved must be less than this input")
-                    Events = Event.objects.filter()
-                    context = {
-                        'Events': Events,
-                    }
-                    return render(request, 'movies/reservation.html', context)
-
-                # Save the updated information for Event in the database
-                currentEvent.save()
-
-                # If the reservation already exists then just add to the reservation (filter by event id and owner)
-                if Reservation.objects.filter(EventId_id=currentEvent.EventId).filter(Owner=currentUser).exists():
-                    reservation = Reservation.objects.get(EventId_id=currentEvent.EventId, Owner=currentUser)
-                    reservation.TicketsReserved = reservation.TicketsReserved + int(numTickets[counter])
+                # Get number of event elements
+                temp = Event.objects.filter().count()
+                Count = 0
+                # If there are no event objects then count will be 0
+                if temp == 0:
+                    Count = 0
+                # Else there are event objects
                 else:
-                    # Create new reservation object and save it with the appropriate information
-                    reservation = Reservation(Owner_id=currentUser.UserEmail,
-                                              EventId_id=currentEvent.EventId,
-                                              TicketsReserved=int(numTickets[counter]))
+                    # Iterate through the events and make sure there are Available Tickets
+                    for e in Events:
+                        if e.AvailableTickets != 0:
+                            Count = Count + 1
 
-                # If the current number of ticket is not equal to 0 then save the reservation
-                if int(numTickets[counter]) != 0:
-                    # Save the updated reservation in the database
-                    reservation.save()
-                counter = counter + 1  # Iterate counter
+                            # Check if the owner is a business
+                username = request.user.get_username()
+                owner_ID = MyUser.objects.get(UserName=username)
+                IsBusiness = owner_ID.IsBusiness
 
-            # If for some reason there are no entries (full of 0s) then just reprompt to the reservation page
-            if isZeros:
-                # Reload page if form is not valid
-                Events = Event.objects.filter()
                 context = {
                     'Events': Events,
+                    'Count': Count,
+                    'IsBusiness': IsBusiness,
                 }
                 return render(request, 'movies/reservation.html', context)
-            else:
-                # Clear the form and go to the payment page to proceed
-                form = ReservationForm(None)
-                return redirect('/payment')
 
-        # Else statement for invalid forms
-        else:
+        # Grab current users email for foreign key in Reservation object creation,
+        username = request.user.get_username()
+        currentUser = MyUser.objects.get(UserName=username)
+
+        # Set counter to keep track of indexes
+        counter = 0
+        # Iterate through the eventID array
+        for e in eventID:
+
+            # Get Event associated with the tempID
+            currentEvent = Event.objects.get(EventId=e)
+
+            # Need to update the Event with the current number of tickets available
+            currentEvent.AvailableTickets = currentEvent.AvailableTickets - int(numTickets[counter])
+
+            # Make sure the ticket number entered was valid
+            if currentEvent.AvailableTickets < 0:
+                # If it failed then reprompt the user for another input
+                messages.error(request, "The number of tickets you reserved must be less than this input")
+                Events = Event.objects.filter()
+
+                # Get number of event elements
+                temp = Event.objects.filter().count()
+                Count = 0
+                # If there are no event objects then count will be 0
+                if temp == 0:
+                    Count = 0
+                # Else there are event objects
+                else:
+                    # Iterate through the events and make sure there are Available Tickets
+                    for e in Events:
+                        if e.AvailableTickets != 0:
+                            Count = Count + 1
+
+                            # Check if the owner is a business
+                username = request.user.get_username()
+                owner_ID = MyUser.objects.get(UserName=username)
+                IsBusiness = owner_ID.IsBusiness
+
+                context = {
+                    'Events': Events,
+                    'Count': Count,
+                    'IsBusiness': IsBusiness,
+                }
+                return render(request, 'movies/reservation.html', context)
+
+            # Save the updated information for Event in the database
+            currentEvent.save()
+
+            # If the reservation already exists then just add to the reservation (filter by event id and owner)
+            if Reservation.objects.filter(EventId_id=currentEvent.EventId).filter(Owner=currentUser).exists():
+                reservation = Reservation.objects.get(EventId_id=currentEvent.EventId, Owner=currentUser)
+                reservation.TicketsReserved = reservation.TicketsReserved + int(numTickets[counter])
+            else:
+                # Create new reservation object and save it with the appropriate information
+                reservation = Reservation(Owner_id=currentUser.UserEmail,
+                                          EventId_id=currentEvent.EventId,
+                                          TicketsReserved=int(numTickets[counter]))
+
+            # If the current number of ticket is not equal to 0 then save the reservation
+            if int(numTickets[counter]) != 0:
+                # Save the updated reservation in the database
+                reservation.save()
+                # Sends email confirmation with reservation information
+                template = render_to_string('movies/email_template.html', {'name': currentUser.UserName,
+                                                                           'num_tickets': int(numTickets[counter]),
+                                                                           'event_name': currentEvent.MovieId.MovieName,
+                                                                           'event_date': currentEvent.EventDate,
+                                                                           'event_location': currentEvent.EventAddress})
+                email = EmailMessage(
+                    'PopCorner - Ticket Confirmation',
+                    template,
+                    settings.EMAIL_HOST_USER,
+                    [currentUser.UserEmail]
+                )
+
+                email.fail_silently = False
+                email.send()
+            counter = counter + 1  # Iterate counter
+
+        # If for some reason there are no entries (full of 0s) then just reprompt to the reservation page
+        if isZeros:
             # Reload page if form is not valid
             Events = Event.objects.filter()
+
+            # Get number of event elements
+            temp = Event.objects.filter().count()
+            Count = 0
+            # If there are no event objects then count will be 0
+            if temp == 0:
+                Count = 0
+            # Else there are event objects
+            else:
+                # Iterate through the events and make sure there are Available Tickets
+                for e in Events:
+                    if e.AvailableTickets != 0:
+                        Count = Count + 1
+
+                        # Check if the owner is a business
+            username = request.user.get_username()
+            owner_ID = MyUser.objects.get(UserName=username)
+            IsBusiness = owner_ID.IsBusiness
+
             context = {
                 'Events': Events,
+                'Count': Count,
+                'IsBusiness': IsBusiness,
             }
             return render(request, 'movies/reservation.html', context)
+        # Clear the form and go to the payment page to proceed
+        else:
+            # check if the user has any credit cards already in the database
+            if Payment.objects.filter(Owner_id=currentUser.UserEmail).exists():
+                Payments = Payment.objects.filter(Owner_id=currentUser.UserEmail)
+                context = {
+                    'Payments': Payments,
+                }
+                return render(request, 'movies/pick_payment.html', context=context)
+            # If no credit cards exist then go to the payment page
+            else:
+                return redirect('/payment')
 
     # User must be logged into their account to add a reservation
     else:
-        messages.info(request, "You must login to create a purchase")
+        messages.error(request, "You must login to create a purchase")
         return redirect('/login')
 
 
-def event_form(request):
-    # Initialize form with the data from the site or none
-    form = EventForm(request.POST or None)
-    if request.method == 'POST':
-        # If the form is valid
-        if form.is_valid():
-            # Owner user email for foreign key in Event object creation
-            # this gets the MyUser primary key and stores it in ownerID
-            username = request.user.get_username()
-            owner_ID = MyUser.objects.get(UserName=username)
+def event(request):
+    # Check if user is logged in
+    if request.user.is_authenticated:
 
-            # Get data from form to store in event class object
-            eventObj = Event(
-                # EventId  Need to go and get the primary key from the event field
-                Owner_id=owner_ID.UserEmail,
-                EventAddress=form.cleaned_data.get('EventAddress'),
-                AvailableTickets=form.cleaned_data.get('AvailableTickets'),
-                TotalTickets=form.cleaned_data.get('TotalTickets'),
-                EventDate=form.cleaned_data.get('EventDate'),
-                EventWebsite=form.cleaned_data.get('EventWebsite'),
-                MovieId_id=1
-            )
-            eventObj.save()
-            form = EventForm(None)
-            context = {'form': form}
-            messages.info(request, "Your event has been successfully added!")
-            return render(request, 'movies/index.html', context)
-        else:
-            form = event_form(None)
-            context = {'form': form}
-            return render(request, 'movies/event.html', context)
+        Movies = Movie.objects.filter()
+        numMovies = Movie.objects.filter().count()
+        context = {
+            'Movies': Movies,
+            'numMovies': numMovies,
+        }
+        return render(request, 'movies/event.html', context=context)
+
+    # User must be logged into their account to add a reservation
     else:
-        # Reload page if form is not valid
-        context = {'form': form}
-        return render(request, 'movies/event.html', context)
+        messages.error(request, "You do not have access to this page."
+                                "\nIf you believe this is a mistake please login again!")
+        return redirect('/#index')
+
+
+def add_event(request):
+    # Check if user is logged in
+    if request.user.is_authenticated:
+
+        # Checks if user is a business while also...
+        # Owner user email for foreign key in Event object creation
+        # this gets the MyUser primary key and stores it in ownerID
+        username = request.user.get_username()
+        currentUser = MyUser.objects.get(UserName=username)
+
+        if currentUser.IsBusiness:
+
+            if request.method == 'POST':
+
+                # Get the list of movies the user wants to create an event for
+                movie = request.POST.getlist('movie')
+
+                # If more than one movie was chosen then bring up an error message
+                if len(movie) > 1:
+                    Movies = Movie.objects.filter()
+                    numMovies = Movie.objects.filter().count()
+                    context = {
+                        'Movies': Movies,
+                        'numMovies': numMovies,
+                    }
+                    messages.error(request, "You can only choose one movie for an event")
+                    return render(request, 'movies/event.html', context)
+                # If no movies were chosen then bring up an error message
+                if len(movie) == 0:
+                    Movies = Movie.objects.filter()
+                    numMovies = Movie.objects.filter().count()
+                    context = {
+                        'Movies': Movies,
+                        'numMovies': numMovies,
+                    }
+                    messages.error(request, "You must choose a movie for the event")
+                    return render(request, 'movies/event.html', context)
+                movie = int(movie[0])
+                # Get the list of tickets the user put in
+                address = request.POST.get('EventAddress')
+                # Get list of IDs for each ticket
+                totalTickets = request.POST.get('TotalTickets')
+                # Get list of IDs for each ticket
+                eventDate = request.POST.get('EventDate')
+                # Get list of IDs for each ticket
+                website = request.POST.get('EventWebsite')
+
+                # Validate Total Tickets is an integer
+                if not totalTickets.isdigit():
+                    Movies = Movie.objects.filter()
+                    numMovies = Movie.objects.filter().count()
+                    context = {
+                        'Movies': Movies,
+                        'numMovies': numMovies,
+                    }
+                    messages.error(request, "Total Tickets must be an integer value")
+                    return render(request, 'movies/event.html', context)
+                totalTickets = int(totalTickets)
+
+                # Validate Total Tickets is not a negative number or a character
+                if totalTickets <= 0:
+                    Movies = Movie.objects.filter()
+                    numMovies = Movie.objects.filter().count()
+                    context = {
+                        'Movies': Movies,
+                        'numMovies': numMovies,
+                    }
+                    messages.error(request, "Total Tickets must be a number greater than 0")
+                    return render(request, 'movies/event.html', context)
+
+                # Validate Date is in the Future
+                today = datetime.today()
+                date_time_obj = datetime.strptime(eventDate, '%Y-%m-%dT%H:%M')
+                if date_time_obj < today:
+                    Movies = Movie.objects.filter()
+                    numMovies = Movie.objects.filter().count()
+                    context = {
+                        'Movies': Movies,
+                        'numMovies': numMovies,
+                    }
+                    messages.error(request, "The event date must be in the future")
+                    return render(request, 'movies/event.html', context)
+
+                # Passed validation so save information into the event database
+
+                e = Event(Owner_id=currentUser.UserEmail, EventAddress=address, AvailableTickets=totalTickets,
+                          TotalTickets=totalTickets, EventDate=eventDate, MovieId_id=movie, EventWebsite=website)
+                e.save()
+
+                Movies = Movie.objects.filter()
+                numMovies = Movie.objects.filter().count()
+                context = {
+                    'Movies': Movies,
+                    'numMovies': numMovies,
+                }
+                messages.info(request, "You have added an event!")
+                return render(request, 'movies/event.html', context)
+
+            else:
+                Movies = Movie.objects.filter()
+                numMovies = Movie.objects.filter().count()
+                context = {
+                    'Movies': Movies,
+                    'numMovies': numMovies,
+                }
+                return render(request, 'movies/event.html', context)
+        else:
+            messages.error(request, "You do not have access to this page."
+                                    "\nIf you believe this is a mistake please login again!")
+            return redirect('/#index')
+    else:
+        messages.error(request, "You must login in order to fill out this form")
+        return redirect('/login')
 
 
 # Used for the for loop in order to print out reservation information
@@ -328,8 +544,14 @@ def edit_reservation(request):
     if request.user.is_authenticated:
 
         Reservations = Reservation.objects.filter()
+        # Get the current user's information
+        username = request.user.get_username()
+        owner_ID = MyUser.objects.get(UserName=username)
+        # Get the number of reservations the current user has made
+        Count = Reservation.objects.filter(Owner_id=owner_ID.UserEmail).count()
         context = {
             'Reservations': Reservations,
+            'Count': Count,
         }
         return render(request, 'movies/edit_reservation.html', context=context)
 
@@ -344,67 +566,96 @@ def delete_reservation(request):
     # Check if user is logged in
     if request.user.is_authenticated:
 
-        # Get the list of checks the user put in
-        checklist = request.POST.getlist('remove')
-        # Get list of reservation IDs
-        resID = request.POST.getlist('ResID')
-        # Get list of Event IDs
-        eventID = request.POST.getlist('EventID')
+        if request.method == 'POST':
+            # Get the list of reservations the user wants deleted (storing the reservation IDs)
+            res = request.POST.getlist('res')
 
-        # Stores the number of checkboxes which were selected
-        numChecks = 0
-        # Stores the Reservation IDs that the user wants to remove
-        rem = []
-        # Stores the event IDs that need to get updated
-        updateEvents = []
-        # Counter to update the value of i
-        i = 0
+            # Refresh back to the edit page if no boxes were selected
+            if len(res) == 0:
+                Reservations = Reservation.objects.filter()
+                # Get the current user's information
+                username = request.user.get_username()
+                owner_ID = MyUser.objects.get(UserName=username)
+                # Get the number of reservations the current user has made
+                Count = Reservation.objects.filter(Owner_id=owner_ID.UserEmail).count()
+                context = {
+                    'Reservations': Reservations,
+                    'Count': Count,
+                }
+                messages.info(request, "You did make any edits to your reservations.")
+                return render(request, 'movies/edit_reservation.html', context=context)
 
-        # Get the number of checks which have been set
-        for c in range(len(checklist)):
-            # If a checkbox has been selected
-            if checklist[c] == 'on':
-                # Attach the relevant IDs to their appropriate lists
-                rem.append(resID[c])
-                updateEvents.append(eventID[c])
-                # Iterate number of checks and i
-                numChecks = numChecks + 1
-                i = i + 1
+            # Iterate through the provided reservation IDs
+            for Res in res:
+                # Get Reservation to remove
+                currentRes = Reservation.objects.get(ReservationId=Res)
+                # Get Event to update
+                currentEvent = Event.objects.get(EventId=currentRes.EventId_id)
 
-        # Refresh back to the edit page if no boxes were selected
-        if numChecks == 0:
+                # Need to update the Event with the new number of tickets available
+                currentEvent.AvailableTickets = currentEvent.AvailableTickets + currentRes.TicketsReserved
+                # Save the updated information for Event in the database
+                currentEvent.save()
+
+                # Need to delete the reservation
+                Reservation.objects.filter(ReservationId=Res).delete()
+
+            # Refresh the page for now ( need to figure out a way to allow the user to get refunded)
             Reservations = Reservation.objects.filter()
+            # Get the current user's information
+            username = request.user.get_username()
+            owner_ID = MyUser.objects.get(UserName=username)
+            # Get the number of reservations the current user has made
+            Count = Reservation.objects.filter(Owner_id=owner_ID.UserEmail).count()
             context = {
                 'Reservations': Reservations,
+                'Count': Count,
             }
             return render(request, 'movies/edit_reservation.html', context=context)
 
-        # Set counter to keep track of indexes
-        counter = 0
-        # Iterate through the remove array (contains Reservation IDs to remove)
-        for e in rem:
-            # Get Reservation to remove
-            currentRes = Reservation.objects.get(ReservationId=e)
-            # Get Event to update
-            currentEvent = Event.objects.get(EventId=updateEvents[counter])
-            counter = counter + 1
-
-            # Need to update the Event with the new number of tickets available
-            currentEvent.AvailableTickets = currentEvent.AvailableTickets + currentRes.TicketsReserved
-            # Save the updated information for Event in the database
-            currentEvent.save()
-
-            # Need to delete the reservation
-            Reservation.objects.filter(ReservationId=e).delete()
-
-        # Refresh the page for now ( need to figure out a way to allow the user to get refunded)
-        Reservations = Reservation.objects.filter()
-        context = {
-            'Reservations': Reservations,
-        }
-        return render(request, 'movies/edit_reservation.html', context=context)
-
-    # User must be logged into their account to add a reservation
+    # If user is not logged in
     else:
         messages.info(request, "You must login to create a purchase")
         return redirect('/login')
+
+
+def finish_payment(request):
+    messages.info(request, "You have successfully purchased a ticket!\nCheck your email for confirmation!")
+    return redirect('/#index')
+
+
+def about_us(request):
+    return render(request, 'movies/about_us.html')
+
+
+def movies(request):
+    # Get the number of movie objects which exist
+    numMovies = Movie.objects.filter().count()
+    if numMovies == 0:
+        # Create Movie Objects (manually created by the programmer)
+        m = Movie(MovieName="Aladdin", MovieDuration=128,
+                  MoviePic="https://m.media-amazon.com/images/I/71liEu4AGtL._AC_.jpg")
+        m.save()
+        m = Movie(MovieName="Frozen", MovieDuration=109,
+                  MoviePic="https://images-na.ssl-images-amazon.com/images/I/714arK1ZtCL._AC_SY741_.jpg")
+        m.save()
+        m = Movie(MovieName="The Lion King", MovieDuration=118,
+                  MoviePic="https://cdn11.bigcommerce.com/s-yshlhd/images/stencil/1280x1280/products/6864/157221/full.thelionking-19773__42835.1556888193.jpg?c=2?imbypass=on")
+        m.save()
+
+    Movies = Movie.objects.filter()
+    # Check the user is logged in
+    if request.user.is_authenticated:
+        username = request.user.get_username()
+        owner_ID = MyUser.objects.get(UserName=username)
+        # Get if the user is a business
+        IsBusiness = owner_ID.IsBusiness
+    # If they are not logged in then set it to 0
+    else:
+        IsBusiness = 0
+    context = {
+        'Movies': Movies,
+        'numMovies': numMovies,
+        'IsBusiness': IsBusiness,
+    }
+    return render(request, 'movies/movies.html', context=context)
