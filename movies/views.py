@@ -261,7 +261,7 @@ def add(request):
 def event_form(request):
     # Initialize form with the data from the site or none
     form = EventForm(request.POST or None)
-    if request.method == 'POST':
+    if request.user.is_authenticated:
         # If the form is valid
         if form.is_valid():
             # Owner user email for foreign key in Event object creation
@@ -273,6 +273,7 @@ def event_form(request):
             eventObj = Event(
                 # EventId  Need to go and get the primary key from the event field
                 Owner_id=owner_ID.UserEmail,
+                EventName=form.cleaned_data.get('EventName'),
                 EventAddress=form.cleaned_data.get('EventAddress'),
                 AvailableTickets=form.cleaned_data.get('AvailableTickets'),
                 TotalTickets=form.cleaned_data.get('TotalTickets'),
@@ -286,9 +287,9 @@ def event_form(request):
             messages.info(request, "Your event has been successfully added!")
             return render(request, 'movies/index.html', context)
         else:
-            form = event_form(None)
+            form = EventForm(None)
             context = {'form': form}
-            return render(request, 'movies/event.html', context)
+            return render(request, 'movies/index.html', context)
     else:
         # Reload page if form is not valid
         context = {'form': form}
@@ -327,4 +328,40 @@ def watch_list(request):
         messages.info(request, "Please log in to add a movie to your watch list")
         return render(request, 'movies/login.html')
 
-# need to make button function for saving movies to watch
+
+def watch_list_form(request):
+    # Initialize form with the data from the site or none
+    form = WatchListForm(request.POST or None)
+    if request.user.is_authenticated:
+        # If the form is valid
+        if form.is_valid():
+            # Owner user email for foreign key in Event object creation
+            # this gets the MyUser primary key and stores it in ownerID
+            username = request.user.get_username()
+            owner_ID = MyUser.objects.get(UserName=username)
+
+            # Get data from form to store in event class object
+            watchlistObj = watchList(
+                # EventId  Need to go and get the primary key from the event field
+                Owner_id=owner_ID.UserEmail,
+                EventName=form.cleaned_data.get('EventName'),
+                EventAddress=form.cleaned_data.get('EventAddress'),
+                AvailableTickets=form.cleaned_data.get('AvailableTickets'),
+                TotalTickets=form.cleaned_data.get('TotalTickets'),
+                EventDate=form.cleaned_data.get('EventDate'),
+                EventWebsite=form.cleaned_data.get('EventWebsite'),
+                MovieId_id=1
+            )
+            eventObj.save()
+            form = EventForm(None)
+            context = {'form': form}
+            messages.info(request, "Your watch list has been successfully added!")
+            return render(request, 'movies/index.html', context)
+        else:
+            form = EventForm(None)
+            context = {'form': form}
+            return render(request, 'movies/index.html', context)
+    else:
+        # Reload page if form is not valid
+        context = {'form': form}
+        return render(request, 'movies/event.html', context)

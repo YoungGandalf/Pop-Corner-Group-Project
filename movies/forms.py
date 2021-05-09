@@ -47,8 +47,8 @@ class ReservationForm(ModelForm):
 class EventForm(ModelForm):
     # EventId = forms.AutoField(max_length=100, label='EventID')
     # BusinessOwner = forms.ForeignKey(MyUser, on_delete=models.CASCADE)
+    EventName = forms.CharField(max_length=100, label="Event Name")
     EventAddress = forms.CharField(widget=TextInput, max_length=100, label='Address of Event')
-    # can place auto increment to decrement when bought
     AvailableTickets = forms.IntegerField(widget=NumberInput, label="Tickets Available")
     TotalTickets = forms.IntegerField(widget=NumberInput, label="Total Tickets")
     EventDate = forms.DateTimeField(widget=DateTimeInput, label="Event Date")
@@ -58,4 +58,12 @@ class EventForm(ModelForm):
 
     class Meta:
         model = Event
-        fields = ["EventAddress", "AvailableTickets", "TotalTickets", "EventDate", "EventWebsite"]
+        fields = ["EventName", "EventAddress", "AvailableTickets", "TotalTickets", "EventDate", "EventWebsite"]
+
+
+class WatchListForm(ModelForm):
+    Favorites = forms.BooleanField(widget=CheckboxInput, required=False, label='Watch List')
+
+    class Meta:
+        model = Watchlist
+        fields = ["Favorites"]

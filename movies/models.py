@@ -21,6 +21,7 @@ class Movie(models.Model):
 class Event(models.Model):
     EventId = models.AutoField(primary_key=True)
     Owner = models.ForeignKey('MyUser', on_delete=models.CASCADE)
+    EventName = models.CharField(max_length=100, validators=[validate_name_length, validate_username_alphadigits])
     EventAddress = models.CharField(max_length=100)
     AvailableTickets = models.IntegerField()
     TotalTickets = models.IntegerField()
@@ -40,6 +41,7 @@ class Watchlist(models.Model):
     WatchlistId = models.AutoField(primary_key=True)
     Owner = models.ForeignKey('MyUser', on_delete=models.CASCADE)
     MovieId = models.ForeignKey('Movie', on_delete=models.CASCADE)
+    Favorites = models.BooleanField(default=False)
 
 
 class Payment(models.Model):

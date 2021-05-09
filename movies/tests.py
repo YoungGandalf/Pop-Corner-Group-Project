@@ -151,15 +151,19 @@ class ReservationTestCase(TestCase):
                                     data={'tickets': '-15', 'tempID': '1'})
         self.assertEqual(response.status_code, 200)
 
+
 # Tests for Event Form
 class EventTestCases(TestCase):
     def test_EventTestCases_valid(self):
         MyUser.objects.create(UserEmail="ownertest1@gmail.com", UserPassword="Owner1", UserName="ownertest1",
                               UserPhoneNumber="123-456-7899", IsBusiness=True)
         Movie.objects.create(MovieName="TestMovie", MovieDuration="60")
-        form = EventForm(data={'EventAddress': "123", 'AvailableTickets': '90',
-                               'TotalTickets': '100', 'EventDate': "2021-10-25",
-                               'EventWebsite': "www.johndoe.com"})
+        form = EventForm(
+            data={'EventName': 'TestEvent',
+                  'EventAddress': 'Erickson Field - 1000 Hilltop Circle, Baltimore, MD 21250',
+                  'AvailableTickets': '90',
+                  'TotalTickets': '100', 'EventDate': "2021-10-25",
+                  'EventWebsite': "www.johndoe.com"})
 
         self.assertTrue(form.is_valid())
 
@@ -167,9 +171,10 @@ class EventTestCases(TestCase):
         MyUser.objects.create(UserEmail="ownertest2@gmail.com", UserPassword="Owner2", UserName="ownertest2",
                               UserPhoneNumber="123-456-7895", IsBusiness=True)
         Movie.objects.create(MovieName="TestMovie", MovieDuration="60")
-        form = EventForm(data={'Owner_id': "ownertest1@gmail.com", 'EventAddress': "", 'AvailableTickets': "",
-                               'TotalTickets': "", 'EventDate': "", 'MovieId_id': "2",
-                               'EventWebsite': ""})
+        form = EventForm(
+            data={'Owner_id': "ownertest1@gmail.com", 'EventName': "", 'EventAddress': "", 'AvailableTickets': "",
+                  'TotalTickets': "", 'EventDate': "", 'MovieId_id': "2",
+                  'EventWebsite': ""})
         self.assertFalse(form.is_valid())
 
 
@@ -190,7 +195,7 @@ class PasswordResetCase(TestCase):
         # checks if the password is properly reset
         # THIS TEST DOES NOT WORK RIGHT NOW BECAUSE I'M NOT SURE HOW TO ENCODE THE UIDB64, BUT THE TOKEN IS CORRECT
         response = self.client.get(reverse('/password-reset-confirm/' + str(base64.b64encode(bytes(user.id))) +
-                                        '/' + str(token)), {'new_password1:Lemons123', 'new_password2:Lemons123'})
+                                           '/' + str(token)), {'new_password1:Lemons123', 'new_password2:Lemons123'})
         self.assertEqual(response.status_code, 302)
 
         # once the password is change, checks if the login is correct

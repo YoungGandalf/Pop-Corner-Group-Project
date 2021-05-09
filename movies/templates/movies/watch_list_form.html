@@ -26,18 +26,44 @@
     </header>
 
 
+    <h1 style="color:tomato;font-size:150%;font-family:'Optima';">Movies to add to watch list</h1>
+
     <div class="page-content">
-        <!-- Prints out the messages from login-->
-        {% if messages %}
+    <p>
+        Here are possible movies to watch:
+        <ol>
+
+            {% if messages %}
                 <ul class="messages">
                     {% for message in messages %}
                         <li  {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </li>
                     {% endfor %}
                 </ul>
-        {% endif %}
+            {% endif %}
+            {% if error %}
+                {{ error }}
+            {% endif %}
 
-        <p style="font-size:300%;color:red;float:right;padding-top:15%;padding-right:20%;">Welcome to PopCorner!</p>
-        <img src="{% static 'images/popcorn_cartoon.png' %}" alt="My Logo" style="height:40%">
+        <form action="/add/" method="POST">
+            {% for Movie in allMovies %}
+            <!-- check if movie fav is in database already-->
+                <li>{{ Movie.MovieName }} {{ ":" }} <br>
+                {{ Movie.MovieDuration }} {{ "minutes" }} </li>
+                <br>
+
+                {% csrf_token %}
+                <!-- Both inputs need to be a list (specified by id) -->
+                <!-- Ask User for the number of tickets (default is 0)-->
+                Add to Watch List
+                <input type=checkbox>
+
+
+                {% endif %}
+            {% endfor %}
+        <input type="submit" name="submit" value="Add Reservation"/>
+        </form>
+        </ol>
+    </p>
     </div>
 
 </body>

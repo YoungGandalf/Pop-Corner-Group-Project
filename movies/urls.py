@@ -15,7 +15,8 @@ urlpatterns = [
     path('edit_reservation/', views.edit_reservation, name='edit_reservation'),
     path('delete_reservation/', views.delete_reservation, name='delete_reservation'),
     path('movies/', views.movies_list, name='movies_list'),
-    path('watch_list/', views.watch_list, name='watch_list')
+    path('watch_list/', views.watch_list, name='watch_list'),
+    path('watch_list_form/', views.watch_list_form, name='watch_list_form')
 ]
 # URLS for resetting password
 path('password-reset/',
