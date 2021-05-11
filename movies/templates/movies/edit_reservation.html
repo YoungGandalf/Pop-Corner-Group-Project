@@ -74,24 +74,21 @@
                         {% csrf_token %}
                         {% for Reservation in Reservations %}
 
-
                             <!-- Only print out information related to the current user-->
                             {% if user.username == Reservation.Owner.UserName %}
+
                                 <!-- Print out Relevant Information for the Reservation-->
                                 <img src="{{Reservation.EventId.MovieId.MoviePic}}"style="height:200px; float:left; padding-right: 10px;"> <br/>
-                                <h5> {{ Reservation.EventId.MovieId.MovieName }} </h5> <br>
-                                <p>
-                                Date/Time: {{ Reservation.EventId.EventDate }} <br>
-                                Address: {{ Reservation.EventId.EventAddress }} <br>
-                                Number of Tickets Reserved: {{ Reservation.TicketsReserved }} <br>
-                                Would you like to remove this reservation?
-                                <!-- Store the current Reservation ID inside the checkbox -->
-                                <input class="check" type="checkbox" value={{Reservation.ReservationId}} id="ResID.id" name="res"><br><br>
-                                 <!--<div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value={{ Reservation.ReservationId }} id="ResID.id" name="res">
-                                    <label class="form-check-label" for="ResID.id"></label>
-                                </div>-->
-                                </p>
+                                <h5> {{ Reservation.EventId.MovieId.MovieName }} </h5>
+                                <p> Date/Time: {{ Reservation.EventId.EventDate }} <br>
+                                    Location Name: {{ Reservation.EventId.LocationName }} <br>
+                                    &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+                                    Address: {{ Reservation.EventId.EventAddress }} <br>
+                                    Number of Tickets Reserved: {{ Reservation.TicketsReserved }} <br>
+                                    Would you like to remove this reservation?
+                                    <!-- Store the current Reservation ID inside the checkbox -->
+                                    <input class="check" type="checkbox" value={{Reservation.ReservationId}} id="ResID.id" name="res"><br><br>
+                                <br></p>
                             {% endif %}
 
 
@@ -105,7 +102,7 @@
                 <p>Currently, you do not have any reservations to view.</p>
             {% endif %}
             <p>
-            If you would like to create a reservation, <a href = "/reservation"><strong>Reservation</strong></a>.
+                <br>If you would like to create a reservation, <a href = "/reservation"><strong>Reservation</strong></a>.</br>
             </p>
         </div>
     </section>

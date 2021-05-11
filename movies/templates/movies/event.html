@@ -6,7 +6,7 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     {%  load static  %}
 
-    <title>Add Reservation</title>
+    <title>Add Event</title>
 
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,600,600i,700,700i" rel="stylesheet">
@@ -53,12 +53,12 @@
         </div>
     </header>
 
-    <!-- ======= Reservations Section ======= -->
-    <section id="reservations" class="reservations section-bg">
+    <!-- ======= Event Section ======= -->
+    <section id="events" class="events section-bg">
         <div class="container">
             <div class="section-title">
-            <h2>Reservation Info</h2>
-                <p>Here are possible movies to watch</p>
+            <h2>Event Info</h2>
+                <p>Here are possible movies to choose from</p>
             </div>
 
             {% if numCount != 0 %}
@@ -81,30 +81,24 @@
                         {% for Movie in Movies %}
 
                             {% csrf_token %}
-                            <section id="{{ Event.LocationName }}">
+                            <section id="{{ Movie.MovieName }}">
                                 <!-- Print out Relevant Information for the Movie-->
                                 <img src="{{Movie.MoviePic}}" style="height:200px; float: left; padding-right: 10px;"> <br/>
-                                <h5>{{ Event.MovieId.MovieName }}</h5>  <br>
-                                <p> Would you like to choose this movie? </p>
+                                <h5>{{ Movie.MovieName }}</h5>
+                                 <!-- Store the current Movie ID inside the checkbox -->
+                                <p> <br>Would you like to choose this movie? <input class="check" type="checkbox" value={{Movie.MovieId}} id="MovieID.id" name="movie"></p>
 
-                                <!-- Store the current Movie ID inside the checkbox -->
-                                <!--<div class="form-check">-->
-                                <!--<input class="form-check-input" type="checkbox" value={{Movie.MovieId}} id="MovieID.id" name="movie">
-                                <label class="form-check-label" for="MovieID.id"></label>
-
-                                </div>-->
-                                <input class="check" type="checkbox" value={{Movie.MovieId}} id="MovieID.id" name="movie">
                             </section>
 
                         {% endfor %}
                         <!-- Prompt the user for appropriate event information -->
-                        <br> <br/>
-                        <pre>Address of Event    <input type="text" name="EventAddress" required></pre>
-                        <pre>Location Name    <input type="text" name="LocationName" required></pre>
-                        <pre>Total Tickets            <input type="integer" name="TotalTickets" required></pre>
-                        <pre>Event Date & Time <input type="datetime-local" name="EventDate" required></pre>
-                        <pre>Business Url            <input type="url" name="EventWebsite" required></pre><br>
-                        <input type="submit" name="submit" value="Add Reservation"/>
+                        <br><br>Address of Event &nbsp&nbsp <input type="text" name="EventAddress" required><br/>
+                        <br>Location Name &nbsp&nbsp&nbsp&nbsp&nbsp <input type="text" name="LocationName" required><br/>
+                        <br>Total Tickets &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp <input type="number" name="TotalTickets" value = 1 min="1"><br/>
+
+                        <br>Event Date & Time <input type="datetime-local" name="EventDate" required><br/>
+                        <br>Business Url &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp <input type="url" name="EventWebsite" required><br/>
+                        <br><input type="submit" name="submit" value="Add Event"/><br/>
                     {% endif %}
                 </form>
 
