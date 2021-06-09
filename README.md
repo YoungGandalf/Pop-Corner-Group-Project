@@ -1,3 +1,4 @@
+
 # Pop-Corner
 
 ## Setup
@@ -44,3 +45,4 @@ The following command will run the tests specified in tests.py.
 (venv)$ python manage.py test
 ```
 
+<img width="1356" alt="Screen_Shot_2021-06-09_at_3 07 45_PM" src="https://user-images.githubusercontent.com/70611669/121424800-c169ef80-c93f-11eb-8fee-a052d28b78f5.png">
