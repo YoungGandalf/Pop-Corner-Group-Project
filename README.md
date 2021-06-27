@@ -1,4 +1,6 @@
 
+### REQUIMENTS FOR PROJECT WERE TO GET AS MUCH DONE. NOT COMPLETE. 
+
 # Pop-Corner
 
 ## Setup
